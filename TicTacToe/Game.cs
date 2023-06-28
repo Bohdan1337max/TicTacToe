@@ -9,21 +9,12 @@ public class Game
         {4,5,6},    //1
         {1,2,3} };  //2
     //   0 1 2
-    private int[,] WinCombination = new int[,]
-           {{7, 8, 9}, 
-            {4, 5, 6},
-            {1, 2, 3},
-            {7, 8, 9},
-            {8, 5, 2},
-            {9, 6, 3},
-            {7, 5, 3},
-            {9, 5, 1}};
-
+    
     public readonly int[,] GameField = new int[3, 3];
     private int _turnCount = 1;
     public bool IsGameEnd;
 
-    public void DefineSign(int playerTurn)
+    public void MakingTurn(int playerTurn)
     {
         for (int i = 0; i < 3; i++)
         {
@@ -31,12 +22,17 @@ public class Game
             {
                 if (_field[i, j] == playerTurn)
                 {
+                    if(GameField[i,j] != 0)
+                        break;
                     if (_turnCount % 2 != 0)
                     {
-                        GameField[i, j] = 1;
+                        GameField[i, j] = (int)GameSigns.Zero;
+                        TurnIncrease();
                         continue;
                     }
-                    GameField[i, j] = 2;
+                    GameField[i, j] = (int)GameSigns.X;
+                    TurnIncrease();
+                    
                 }
             }
         }
@@ -186,12 +182,21 @@ public class Game
     {
         var sign = GameField[i, j];
         
-            if (sign == GameField[2, 0] && sign == GameField[0, 2])
+            if (sign == GameField[2, 0] && sign == GameField[0, 2] && sign == GameField[1,1])
                 return 2;
-            if (sign == GameField[0, 0] && sign == GameField[2, 2])
+            if (sign == GameField[0, 0] && sign == GameField[2, 2] && sign == GameField[1,1])
                 return 2;
 
             return 0;
+    }
+
+    public void EndGameNotification()
+    {
+        if (_turnCount % 2 != 0)
+        {
+             Console.WriteLine("Congratulations X WIN!!!!!");
+        }
+        Console.WriteLine("Congratulations O WIN!!!!!");
     }
     
     public void TurnIncrease()

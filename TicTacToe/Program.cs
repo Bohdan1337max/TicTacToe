@@ -10,14 +10,11 @@ class Program
         while (!game.IsGameEnd)
         {
             int playerTurn = Convert.ToInt32(Console.ReadLine());
-            game.DefineSign(playerTurn);
+            game.MakingTurn(playerTurn);
             game.FindWinCombination(playerTurn);
-            fieldPainter.FieldCreate(game.GameField);
-            game.TurnIncrease();
-            
+            fieldPainter.PaintField(game.GameField);
+
         }
-
-
-
+        game.EndGameNotification();
     }
 }
