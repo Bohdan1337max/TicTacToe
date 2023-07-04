@@ -4,24 +4,24 @@
  public enum GameSigns
  {
      Empty,
-     Zero,
+     O,
      X,
          
  }
  public class FieldPainter 
  {
      
-     public void PaintField (int[,] gameField)
+     public void PaintField (GameSigns[,] gameField)
      {
          for (int i = 0; i <= 2; i++)
          {
              for (int j = 0; j <= 2; j++)
              {
-                 if(gameField[i,j] == (int)GameSigns.X)
+                 if(gameField[i,j] == GameSigns.X)
                      Console.Write('X');
-                 if (gameField[i,j] ==(int)GameSigns.Zero)
+                 if (gameField[i,j] == GameSigns.O)
                      Console.Write('O');
-                 if(gameField[i,j] == (int)GameSigns.Empty)
+                 if(gameField[i,j] == GameSigns.Empty)
                      Console.Write(' ');
              }
              Console.Write('|');
@@ -30,6 +30,8 @@
                  Console.WriteLine("---");
          }
      }
+     
+     
      
   
  }
