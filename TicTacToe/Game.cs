@@ -5,12 +5,12 @@ namespace TicTacToe;
 public class Game
 {
     private readonly int[,] _field = new int[3, 3]
-    {
+    { // 0  1  2
         {7, 8, 9}, //0
         {4, 5, 6}, //1
-        {1, 2, 3}
-    }; //2
-    //   0 1 2
+        {1, 2, 3}  //2
+    };
+   
     public GameSigns Winner; 
     public readonly GameSigns[,] GameField = new GameSigns[3, 3];
     private GameSigns _currentSign = GameSigns.X;

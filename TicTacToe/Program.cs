@@ -7,16 +7,18 @@ class Program
     {
         Game game = new Game();
         FieldPainter fieldPainter = new ();
+        
         game.ShowWelcomeNotification();
         while (!game.IsGameEnd)
         {
             
             var numpadTurnInput = HandleInput();
             game.MakeTurn(numpadTurnInput);
-            fieldPainter.PaintField(game.GameField);
-            
+            fieldPainter.PaintGameField(game.GameField);
+
         }
         game.ShowEndGameNotification(game.Winner);
+        
     }
 
     private static bool ValidateInput(string? turnInput)
