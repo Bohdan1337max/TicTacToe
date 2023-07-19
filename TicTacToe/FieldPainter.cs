@@ -18,13 +18,13 @@
  
  public class FieldPainter
  {
-     private FieldDye[,] _field = new FieldDye[FieldHeight,FieldWidth];
+     private FileHandler _fileHandler = new FileHandler();
+     private Pixel[,] _field = new Pixel[FieldWidth,FieldHeight];
      private const int FieldWidth = 31;
      private const int FieldHeight = 25;
      private const int CellHeight = 7;
      private const int CellWidth = 9;
-
-     int[,] X = new int[,]
+     private readonly int[,] _x = new int[,]
      {
          {0, 0, 0, 0, 0, 0, 0, 0, 0},
          {0, 0, 1, 0, 0, 0, 1, 0, 0},
@@ -34,7 +34,8 @@
          {0, 0, 1, 0, 0, 0, 1, 0, 0},
          {0, 0, 0, 0, 0, 0, 0, 0, 0}
      };
-     int[,] O = new int[,]
+
+     private readonly int[,] _o = new int[,]
      {
          {0, 0, 0, 0, 0, 0, 0, 0, 0},
          {0, 0, 0, 1, 1, 1, 0, 0, 0},
@@ -45,6 +46,7 @@
          {0, 0, 0, 0, 0, 0, 0, 0, 0}
      };
 
+     /*
      public static void PaintField (GameSigns[,] gameField)
      {
          for (int i = 0; i <= 2; i++)
@@ -64,113 +66,134 @@
                  Console.WriteLine("---");
          }
      }
+     */
      
      
-     public void PaintGameField(GameSigns[,] gameField)
+     public void PaintGameField(GameSigns[,] gameField,int x,int y)
      {
-         IndicateHorizontalLines();
-         IndicateVerticalLines();
-         
-         for (int i = 0; i < 3; i++)
-         {
-             for (int j = 0; j < 3; j++)
-             {
-                 int x = FindIndex(i,j).X;
-                 int y = FindIndex(i, j).Y;
-                 
-                 if (gameField[i, j] == GameSigns.O)
-                     _field = InsertSign(_field, O,x,y);
-                 if (gameField[i, j] == GameSigns.X)
-                     _field = InsertSign(_field, X, x, y);
-
-
-             }
-         }
+         Console.Clear();
+         BuildBufferField(gameField,x,y);
          for (int i = 0; i < FieldHeight; i++)
          {
              for (int j = 0; j < FieldWidth; j++)
              {
-                 if (_field[i, j] == FieldDye.Sign)
-                 {
-                     Console.Write("#");
-                 }
-                 else
-                 {
-                     Console.Write(' ');
-                 }
+                 Console.BackgroundColor = _field[j, i]._color;
+                 Console.Write(_field[j, i]._char);
+
                  if(j == FieldWidth - 1)
                      Console.WriteLine();
-
+                 
              }
          }
          
      }
-//TODO
      /*
      /0  1  2
      {7, 8, 9}, //0
      {4, 5, 6}, //1
      {1, 2, 3}  //2
      */
+     //TODO Add Pointer on the field,feel build Buffer method,
+     public void BuildBufferField(GameSigns[,] gameField, int x,int y)
+     {
+         Array.Clear(_field);
+         IndicateHorizontalLines();
+         IndicateVerticalLines();
+         HandlePointer(x,y);
+         AddSignOnField(gameField);
+     }
+
+    
+     private void HandlePointer(int x,int y)
+     {
+         var pointer = new Pixel
+         {
+             _char = '*',
+             _color = ConsoleColor.DarkRed
+         };
+         
+         int X = FindIndex(x,y).X;
+         int Y = FindIndex(x, y).Y;
+         _field[X, Y] = pointer;
+
+
+     }
      private (int X, int Y) FindIndex(int x,int y)
      {
-         return (x + 1 + CellHeight * x,y + 1 + CellWidth * y);
+         return (x + 1 + CellWidth * x,y + 1 + CellHeight * y);
      }
-     
-  
-     private void IndicateHorizontalLines()
+
+     public void AddSignOnField(GameSigns[,] gameField)
+
      {
-         for (int i = 0; i < FieldWidth; i++)
+         for (int i = 0; i < 3; i++)
          {
-             _field[0, i] = FieldDye.Sign;
-             
-             _field[8, i] = FieldDye.Sign;
+             for (int j = 0; j < 3; j++)
+             {
+                 int x = FindIndex(j, i).X;
+                 int y = FindIndex(j, i).Y;
 
-             _field[16, i] = FieldDye.Sign;
-
-             _field[24, i] = FieldDye.Sign;
+                 if (gameField[j, i] == GameSigns.O)
+                     _field = InsertSign(_field, _o, x, y);
+                 if (gameField[j, i] == GameSigns.X)
+                     _field = InsertSign(_field, _x, x, y);
+             }
          }
-         
      }
 
      private void IndicateVerticalLines()
      {
          for (int i = 0; i < FieldHeight; i++)
          {
-             _field[i, 0] = FieldDye.Sign;
+             _field[0, i]._char = '#';
+             
+             _field[10, i]._char = '#';
 
-             _field[i, 10] = FieldDye.Sign;
+             _field[20, i]._char = '#';
 
-             _field[i, 20] = FieldDye.Sign;
+             _field[30, i]._char = '#';
+         }
+         
+     }
 
-             _field[i, 30] = FieldDye.Sign;
+     private void IndicateHorizontalLines()
+     {
+         for (int i = 0; i < FieldWidth; i++)
+         {
+             _field[i, 0]._char = '#';
+
+             _field[i, 8]._char = '#';
+
+             _field[i, 16]._char = '#';
+
+             _field[i, 24]._char = '#';
          }
      }
 
-     private FieldDye[,] InsertSign(FieldDye[,] field, int[,] signPictureArray,int x,int y)
+     private Pixel[,] InsertSign(Pixel[,] field, int[,] signPictureArray,int x,int y)
      {
          int iteratorX = 0;
          int iteratorY = 0;
-         for (int i = x; i < x + CellHeight; i++)
+         for (int i = y; i < y + CellHeight ; i++)
          {
-             for (int j = y; j < y + CellWidth ; j++)
+             for (int j = x; j < x + CellWidth ; j++)
              {
-                 if (signPictureArray[iteratorX,iteratorY] == 1)
+                 if (signPictureArray[iteratorY,iteratorX] == 1)
                  {
-                     field[i, j] = FieldDye.Sign;
+                     field[j, i]._char = '#';
                  }
 
-                 if (iteratorY == CellWidth - 1)
+                 if (iteratorX == CellWidth - 1)
                  {
-                     iteratorY = 0;
+                     iteratorX = 0;
                      continue;
                  }
 
-                 iteratorY++;
+                 iteratorX++;
                 
              }
              
-             iteratorX++;
+             iteratorY++;
          }
 
          return field;

@@ -13,3 +13,5 @@ C:\Users\shako\TicTacToe\TicTacToe\obj\Debug\net7.0\refint\TicTacToe.dll
 C:\Users\shako\TicTacToe\TicTacToe\obj\Debug\net7.0\TicTacToe.pdb
 C:\Users\shako\TicTacToe\TicTacToe\obj\Debug\net7.0\TicTacToe.genruntimeconfig.cache
 C:\Users\shako\TicTacToe\TicTacToe\obj\Debug\net7.0\ref\TicTacToe.dll
+C:\Users\shako\TicTacToe\TicTacToe\bin\Debug\net7.0\Models\O.txt
+C:\Users\shako\TicTacToe\TicTacToe\bin\Debug\net7.0\Models\X.txt

@@ -24,23 +24,27 @@ public class Game
             {
                 if (_field[i, j] == numpadTurnInput)
                 {
-                    if (GameField[i, j] != GameSigns.Empty)
-                        return;
-                    
-                    GameField[i, j] = _currentSign;
-                    Console.Clear();
-                    if (FindWinCombination(numpadTurnInput))
-                    {
-                        Winner = _currentSign;
-                        IsGameEnd = true;
-                        return;
-                    }
-
-                    ChangeGameSign();
-                    CheckIsFieldComplete();
+                    MakeTurn(i,j);
                 }
             }
         }
+    }
+
+    public void MakeTurn(int x, int y)
+    {
+
+        if (GameField[x, y] != GameSigns.Empty)
+            return;
+        GameField[x, y] = _currentSign;
+        if (FindWinCombination(x, y))
+        {
+            Winner = _currentSign;
+            IsGameEnd = true;
+            return;
+        }
+        
+        ChangeGameSign();
+        CheckIsFieldComplete();
     }
 
     private void ChangeGameSign()
@@ -75,25 +79,34 @@ public class Game
         return false;
     }
 
-    private int FindVerticalWinCombination(int i, int j)
+    private bool FindWinCombination(int x, int y)
     {
-        var sign = GameField[i, j];
+        if (FindVerticalWinCombination(x, y) >= 2)
+            return true;
+        if (FindHorizontalWinCombination(x, y) >= 2)
+            return true;
+        return FindDiagonalWinCombination(x, y) >= 2;
+    }
+
+    private int FindVerticalWinCombination(int x, int y)
+    {
+        var sign = GameField[x, y];
         int winCombination = 0;
 
-        switch (i)
+        switch (y)
         {
             case 0:
             {
-                while (i < 2)
+                while (y < 2)
                 {
-                    if (sign == GameField[i + 1, j])
+                    if (sign == GameField[x, y + 1])
                     {
                         winCombination++;
-                        i++;
+                        y++;
                     }
                     else
                     {
-                        i++;
+                        y++;
                     }
                 }
 
@@ -101,12 +114,12 @@ public class Game
             }
             case 1:
             {
-                if (sign == GameField[i + 1, j])
+                if (sign == GameField[x, y + 1])
                 {
                     winCombination++;
                 }
 
-                if (sign == GameField[i - 1, j])
+                if (sign == GameField[x, y - 1])
                 {
                     winCombination++;
                 }
@@ -115,16 +128,16 @@ public class Game
             }
             case 2:
             {
-                while (i > 0)
+                while (y > 0)
                 {
-                    if (sign == GameField[i - 1, j])
+                    if (sign == GameField[x, y - 1])
                     {
                         winCombination++;
-                        i--;
+                        y--;
                     }
                     else
                     {
-                        i--;
+                        y--;
                     }
                 }
 
@@ -135,25 +148,25 @@ public class Game
         }
     }
 
-    private int FindHorizontalWinCombination(int i, int j)
+    private int FindHorizontalWinCombination(int x, int y)
     {
-        var sign = GameField[i, j];
+        var sign = GameField[x,y];
         int winCombination = 0;
 
-        switch (j)
+        switch (x)
         {
             case 0:
             {
-                while (j < 2)
+                while (x < 2)
                 {
-                    if (sign == GameField[i, j + 1])
+                    if (sign == GameField[ x + 1,y])
                     {
                         winCombination++;
-                        j++;
+                        x++;
                     }
                     else
                     {
-                        j++;
+                        x++;
                     }
                 }
 
@@ -161,12 +174,12 @@ public class Game
             }
             case 1:
             {
-                if (sign == GameField[i, j + 1])
+                if (sign == GameField[ x + 1,y])
                 {
                     winCombination++;
                 }
 
-                if (sign == GameField[i, j - 1])
+                if (sign == GameField[ x + 1, y])
                 {
                     winCombination++;
                 }
@@ -175,16 +188,16 @@ public class Game
             }
             case 2:
             {
-                while (j > 0)
+                while (x > 0)
                 {
-                    if (sign == GameField[i, j - 1])
+                    if (sign == GameField[ x - 1,y])
                     {
                         winCombination++;
-                        j--;
+                        x--;
                     }
                     else
                     {
-                        j--;
+                        x--;
                     }
                 }
 
@@ -195,9 +208,9 @@ public class Game
         }
     }
 
-    private int FindDiagonalWinCombination(int i, int j)
+    private int FindDiagonalWinCombination(int x, int y)
     {
-        var sign = GameField[i, j];
+        var sign = GameField[x, y];
 
         if (sign == GameField[2, 0] && sign == GameField[0, 2] && sign == GameField[1, 1])
             return 2;
@@ -233,6 +246,6 @@ public class Game
     }
     public void ShowWelcomeNotification()
     {
-        Console.WriteLine("Choose your number on numpad it's will be your turn");
+        Console.WriteLine("Welcome! Red# is your pointer.You can use arrows for navigate on the field!");
     }
 }

@@ -7,20 +7,39 @@ class Program
     {
         Game game = new Game();
         FieldPainter fieldPainter = new ();
-        
+        InputHandler inputHandler = new InputHandler();
+        Test test = new Test();
+        FileHandler fileHandler = new FileHandler();
+
+
+        fileHandler.FindCellSize();
+        /*
         game.ShowWelcomeNotification();
         while (!game.IsGameEnd)
         {
             
-            var numpadTurnInput = HandleInput();
-            game.MakeTurn(numpadTurnInput);
-            fieldPainter.PaintGameField(game.GameField);
+           // var numpadTurnInput = HandleInput();
+           fieldPainter.PaintGameField(game.GameField,inputHandler.X,inputHandler.Y );
+             var key = Console.ReadKey(true);
+            inputHandler.Handle(key);
+            
+            if (key.Key == ConsoleKey.Enter)
+            {
+                game.MakeTurn(inputHandler.X, inputHandler.Y);
+            }
+
+            fieldPainter.PaintGameField(game.GameField,inputHandler.X,inputHandler.Y );
 
         }
         game.ShowEndGameNotification(game.Winner);
+        */
+
         
     }
+    
 
+    
+    
     private static bool ValidateInput(string? turnInput)
     {
         if (int.TryParse(turnInput, out var correctInput))
