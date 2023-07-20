@@ -10,16 +10,13 @@ class Program
         InputHandler inputHandler = new InputHandler();
         Test test = new Test();
         FileHandler fileHandler = new FileHandler();
-
-
-        fileHandler.FindCellSize();
-        /*
+        
         game.ShowWelcomeNotification();
         while (!game.IsGameEnd)
         {
             
            // var numpadTurnInput = HandleInput();
-           fieldPainter.PaintGameField(game.GameField,inputHandler.X,inputHandler.Y );
+           fieldPainter.PaintGameField(game.GameField,inputHandler.X,inputHandler.Y);
              var key = Console.ReadKey(true);
             inputHandler.Handle(key);
             
@@ -32,7 +29,6 @@ class Program
 
         }
         game.ShowEndGameNotification(game.Winner);
-        */
 
         
     }

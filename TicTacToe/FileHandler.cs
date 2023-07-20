@@ -24,7 +24,7 @@ public class FileHandler
         CellHeight = Math.Max(linesCountX, linesCountO);
     }
     
-    public string[] Read(GameSigns currentSign)
+    public string[] GetSignPicture(GameSigns currentSign)
     {
         var content = currentSign switch
         {

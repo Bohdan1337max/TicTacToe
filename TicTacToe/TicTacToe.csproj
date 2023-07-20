@@ -8,12 +8,20 @@
     </PropertyGroup>
 
     <ItemGroup>
-      <None Update="Models\X.txt">
-        <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-      </None>
-      <None Update="Models\O.txt">
-        <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-      </None>
+      <Compile Remove="Models\**" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <EmbeddedResource Remove="Models\**" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <None Remove="Models\**" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <Content Include="bin\Debug\net7.0\Models\O.txt" />
+      <Content Include="bin\Debug\net7.0\Models\X.txt" />
     </ItemGroup>
 
 </Project>

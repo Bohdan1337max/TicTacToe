@@ -18,12 +18,12 @@
  
  public class FieldPainter
  {
-     private FileHandler _fileHandler = new FileHandler();
-     private Pixel[,] _field = new Pixel[FieldWidth,FieldHeight];
-     private const int FieldWidth = 31;
-     private const int FieldHeight = 25;
-     private const int CellHeight = 7;
-     private const int CellWidth = 9;
+     private readonly FileHandler _fileHandler = new FileHandler();
+     private Pixel[,] _field;
+     private static int FieldWidth { get; set; }
+     private static int FieldHeight { get; set; }
+     private int _cellHeight;
+     private int _cellWidth;
      private readonly int[,] _x = new int[,]
      {
          {0, 0, 0, 0, 0, 0, 0, 0, 0},
@@ -67,8 +67,19 @@
          }
      }
      */
+
+     public void ReadFile()
+     {
+         _fileHandler.FindCellSize();
+         _cellHeight = _fileHandler.CellHeight + 2; // 2 = emptySpace in cell on the top
+         _cellWidth = _fileHandler.CellWidth + 4; // 4 = emptySpace in cell on the sides
+         FieldWidth = _cellWidth * 3 + 4;
+         FieldHeight = _cellHeight * 3 + 4;
+         _field = new Pixel[FieldWidth, FieldHeight];
+
+     }
      
-     
+     //Clear whole console
      public void PaintGameField(GameSigns[,] gameField,int x,int y)
      {
          Console.Clear();
@@ -93,10 +104,11 @@
      {4, 5, 6}, //1
      {1, 2, 3}  //2
      */
-     //TODO Add Pointer on the field,feel build Buffer method,
+     
      public void BuildBufferField(GameSigns[,] gameField, int x,int y)
      {
-         Array.Clear(_field);
+         ReadFile();
+         Array.Clear(_field);   
          IndicateHorizontalLines();
          IndicateVerticalLines();
          HandlePointer(x,y);
@@ -112,15 +124,15 @@
              _color = ConsoleColor.DarkRed
          };
          
-         int X = FindIndex(x,y).X;
-         int Y = FindIndex(x, y).Y;
-         _field[X, Y] = pointer;
+         int xPointerIndex = FindIndex(x,y).X;
+         int yPointerIndex = FindIndex(x, y).Y;
+         _field[xPointerIndex, yPointerIndex] = pointer;
 
 
      }
      private (int X, int Y) FindIndex(int x,int y)
      {
-         return (x + 1 + CellWidth * x,y + 1 + CellHeight * y);
+         return (x + 1 + _cellWidth * x,y + 1 + _cellHeight * y);
      }
 
      public void AddSignOnField(GameSigns[,] gameField)
@@ -134,9 +146,9 @@
                  int y = FindIndex(j, i).Y;
 
                  if (gameField[j, i] == GameSigns.O)
-                     _field = InsertSign(_field, _o, x, y);
+                     _field = InsertSign(_field, _fileHandler.GetSignPicture(GameSigns.O), x, y);
                  if (gameField[j, i] == GameSigns.X)
-                     _field = InsertSign(_field, _x, x, y);
+                     _field = InsertSign(_field, _fileHandler.GetSignPicture(GameSigns.X), x, y);
              }
          }
      }
@@ -147,11 +159,11 @@
          {
              _field[0, i]._char = '#';
              
-             _field[10, i]._char = '#';
+             _field[1 + _cellWidth, i]._char = '#';
 
-             _field[20, i]._char = '#';
+             _field[2 + 2 * _cellWidth , i]._char = '#';
 
-             _field[30, i]._char = '#';
+             _field[3 + 3 * _cellWidth , i]._char = '#';
          }
          
      }
@@ -162,11 +174,11 @@
          {
              _field[i, 0]._char = '#';
 
-             _field[i, 8]._char = '#';
+             _field[i, 1 + _cellHeight]._char = '#';
 
-             _field[i, 16]._char = '#';
+             _field[i, 2 + 2 * _cellHeight]._char = '#';
 
-             _field[i, 24]._char = '#';
+             _field[i, 3 + 3 * _cellHeight]._char = '#';
          }
      }
 
@@ -174,16 +186,16 @@
      {
          int iteratorX = 0;
          int iteratorY = 0;
-         for (int i = y; i < y + CellHeight ; i++)
+         for (int i = y; i < y + _cellHeight ; i++)
          {
-             for (int j = x; j < x + CellWidth ; j++)
+             for (int j = x; j < x + _cellWidth ; j++)
              {
                  if (signPictureArray[iteratorY,iteratorX] == 1)
                  {
                      field[j, i]._char = '#';
                  }
 
-                 if (iteratorX == CellWidth - 1)
+                 if (iteratorX == _cellWidth - 1)
                  {
                      iteratorX = 0;
                      continue;
@@ -199,8 +211,26 @@
          return field;
 
      }
-
-
-
-
+     private Pixel[,] InsertSign(Pixel[,] field, string[] signPictureArray,int x,int y)
+     {
+         int iteratorX = 0;
+         int iteratorY = 0;
+         
+         for (int i = y + 1; i < y + 1 + signPictureArray.Length ; i++) // + 1 = empty space between boarder and sign
+         {
+             for (int j = x + 2; j < x + 2 + signPictureArray[iteratorY].Length; j++)
+             {
+                 field[j, i]._char = signPictureArray[iteratorY][iteratorX];
+                 if (iteratorX == signPictureArray[iteratorY].Length - 1)
+                 {
+                     iteratorX = 0;
+                     continue;
+                 }
+                 iteratorX++;
+             }
+             iteratorY++;
+         }
+         return field;
+     }
+     
  }
