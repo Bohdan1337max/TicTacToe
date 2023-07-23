@@ -147,7 +147,7 @@
 
                  if (gameField[j, i] == GameSigns.O)
                      _field = InsertSign(_field, _fileHandler.GetSignPicture(GameSigns.O), x, y);
-                 if (gameField[j, i] == GameSigns.X)
+                 if (gameField[j, i] == GameSigns.X)    
                      _field = InsertSign(_field, _fileHandler.GetSignPicture(GameSigns.X), x, y);
              }
          }
@@ -211,6 +211,8 @@
          return field;
 
      }
+     
+     // Чи стрінг це просто массив чарів?
      private Pixel[,] InsertSign(Pixel[,] field, string[] signPictureArray,int x,int y)
      {
          int iteratorX = 0;

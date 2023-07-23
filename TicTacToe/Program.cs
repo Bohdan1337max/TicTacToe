@@ -24,9 +24,7 @@ class Program
             {
                 game.MakeTurn(inputHandler.X, inputHandler.Y);
             }
-
             fieldPainter.PaintGameField(game.GameField,inputHandler.X,inputHandler.Y );
-
         }
         game.ShowEndGameNotification(game.Winner);
 
