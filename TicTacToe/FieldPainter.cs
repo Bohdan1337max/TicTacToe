@@ -16,10 +16,20 @@
      
  }
  
+ // Зробити сервер для чепухи 
+ // 3 окремих процесів
+ // http client
+ // like API
+ //Зробити сервер і окремо термінал
+ 
+ //Записувати історію матчів в файл
+ 
  public class FieldPainter
  {
      private readonly FileHandler _fileHandler = new FileHandler();
      private Pixel[,] _field;
+     public ConsoleColor ColorX { get; set;}
+     public ConsoleColor ColorO { get; set; }
      private static int FieldWidth { get; set; }
      private static int FieldHeight { get; set; }
      private int _cellHeight;
@@ -79,7 +89,6 @@
 
      }
      
-     //Clear whole console
      public void PaintGameField(GameSigns[,] gameField,int x,int y)
      {
          Console.Clear();
@@ -146,9 +155,9 @@
                  int y = FindIndex(j, i).Y;
 
                  if (gameField[j, i] == GameSigns.O)
-                     _field = InsertSign(_field, _fileHandler.GetSignPicture(GameSigns.O), x, y);
+                     _field = InsertSign(_field, _fileHandler.GetSignPicture(GameSigns.O), x, y,ColorO);
                  if (gameField[j, i] == GameSigns.X)    
-                     _field = InsertSign(_field, _fileHandler.GetSignPicture(GameSigns.X), x, y);
+                     _field = InsertSign(_field, _fileHandler.GetSignPicture(GameSigns.X), x, y,ColorX);
              }
          }
      }
@@ -213,7 +222,8 @@
      }
      
      // Чи стрінг це просто массив чарів?
-     private Pixel[,] InsertSign(Pixel[,] field, string[] signPictureArray,int x,int y)
+     
+     private Pixel[,] InsertSign(Pixel[,] field, string[] signPictureArray,int x,int y, ConsoleColor color)
      {
          int iteratorX = 0;
          int iteratorY = 0;
@@ -223,6 +233,7 @@
              for (int j = x + 2; j < x + 2 + signPictureArray[iteratorY].Length; j++)
              {
                  field[j, i]._char = signPictureArray[iteratorY][iteratorX];
+                 field[j, i]._color = color;
                  if (iteratorX == signPictureArray[iteratorY].Length - 1)
                  {
                      iteratorX = 0;

@@ -1,39 +1,103 @@
 ﻿using System;
+
 namespace TicTacToe;
+
 //TODO Clear console after turn
 class Program
-{
+{ 
     static void Main(string[] args)
     {
         Game game = new Game();
-        FieldPainter fieldPainter = new ();
+        FieldPainter fieldPainter = new();
         InputHandler inputHandler = new InputHandler();
         Test test = new Test();
         FileHandler fileHandler = new FileHandler();
-        
+
+
         game.ShowWelcomeNotification();
+        GetGameParams(args, game,fieldPainter);
         while (!game.IsGameEnd)
         {
-            
-           // var numpadTurnInput = HandleInput();
-           fieldPainter.PaintGameField(game.GameField,inputHandler.X,inputHandler.Y);
-             var key = Console.ReadKey(true);
+            // var numpadTurnInput = HandleInput();
+            fieldPainter.PaintGameField(game.GameField, inputHandler.X, inputHandler.Y);
+            var key = Console.ReadKey(true);
             inputHandler.Handle(key);
-            
+
             if (key.Key == ConsoleKey.Enter)
             {
                 game.MakeTurn(inputHandler.X, inputHandler.Y);
             }
-            fieldPainter.PaintGameField(game.GameField,inputHandler.X,inputHandler.Y );
+
+            fieldPainter.PaintGameField(game.GameField, inputHandler.X, inputHandler.Y);
         }
+
         game.ShowEndGameNotification(game.Winner);
-
-        
     }
-    
 
-    
-    
+
+    public static void GetGameParams(string[] args, Game game, FieldPainter fieldPainter)
+    {
+        //add dependency sing and color in the console
+        string colorX;
+        string colorO;
+        GameSigns gameSing;
+        if (args.Length < 1)
+            return;
+
+        if (args[0] == "O")
+        {
+            game.currentSign = GameSigns.O;
+            gameSing = GameSigns.O;
+        }
+
+        if (args[0] == "X")
+        {
+            game.currentSign = GameSigns.X;
+            gameSing = GameSigns.X;
+        }
+        
+
+        switch (args.Length)
+        {
+            case 2:
+            {
+                colorX = args[1];
+                if (CheckColor(colorX).IsParsed)
+                {
+                    fieldPainter.ColorX = CheckColor(colorX).color;
+                }
+                else
+                {
+                    Console.WriteLine("You choose wrong Color");
+                }
+
+                break;
+            }
+            case 3:
+            {
+                colorX = args[1];
+                colorO = args[2];
+            
+                if (CheckColor(colorX).IsParsed && CheckColor(colorO).IsParsed)
+                {
+                    fieldPainter.ColorX = CheckColor(colorX).color;
+                    fieldPainter.ColorO = CheckColor(colorO).color;
+                }
+                else
+                {
+                    Console.WriteLine("You choose wrong color");
+                }
+
+                break;
+            }
+        }
+    }
+
+    private static (bool IsParsed ,ConsoleColor color) CheckColor(string color)
+    {
+        return Enum.TryParse(color, out ConsoleColor parsedColor) ? (true, parsedColor) : (false, ConsoleColor.Black);
+    }
+
     private static bool ValidateInput(string? turnInput)
     {
         if (int.TryParse(turnInput, out var correctInput))
@@ -42,15 +106,12 @@ class Program
             {
                 return true;
             }
-            
         }
-
         return false;
     }
 
     private static int HandleInput()
     {
-        
         while (true)
         {
             string? turnInput = Console.ReadLine();
@@ -60,7 +121,6 @@ class Program
             }
 
             Console.WriteLine("You choose wrong number.Try again!");
-
         }
     }
 }

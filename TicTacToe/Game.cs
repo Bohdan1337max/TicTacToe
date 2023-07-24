@@ -13,7 +13,7 @@ public class Game
    
     public GameSigns Winner; 
     public readonly GameSigns[,] GameField = new GameSigns[3, 3];
-    private GameSigns _currentSign = GameSigns.X;
+    public GameSigns currentSign = GameSigns.X;
     public bool IsGameEnd;
 
     public void MakeTurn(int numpadTurnInput)
@@ -35,10 +35,10 @@ public class Game
 
         if (GameField[x, y] != GameSigns.Empty)
             return;
-        GameField[x, y] = _currentSign;
+        GameField[x, y] = currentSign;
         if (FindWinCombination(x, y))
         {
-            Winner = _currentSign;
+            Winner = currentSign;
             IsGameEnd = true;
             return;
         }
@@ -49,11 +49,11 @@ public class Game
 
     private void ChangeGameSign()
     {
-        _currentSign = _currentSign switch
+        currentSign = currentSign switch
         {
             GameSigns.X => GameSigns.O,
             GameSigns.O => GameSigns.X,
-            _ => _currentSign
+            _ => currentSign
         };
     }
 
