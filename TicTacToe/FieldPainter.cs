@@ -27,7 +27,7 @@
  public class FieldPainter
  {
      private readonly FileHandler _fileHandler = new FileHandler();
-     private Pixel[,] _field;
+     public Pixel[,] Field;
      public ConsoleColor ColorX { get; set;}
      public ConsoleColor ColorO { get; set; }
      private static int FieldWidth { get; set; }
@@ -85,7 +85,7 @@
          _cellWidth = _fileHandler.CellWidth + 4; // 4 = emptySpace in cell on the sides
          FieldWidth = _cellWidth * 3 + 4;
          FieldHeight = _cellHeight * 3 + 4;
-         _field = new Pixel[FieldWidth, FieldHeight];
+         Field = new Pixel[FieldWidth, FieldHeight];
 
      }
      
@@ -97,8 +97,8 @@
          {
              for (int j = 0; j < FieldWidth; j++)
              {
-                 Console.BackgroundColor = _field[j, i]._color;
-                 Console.Write(_field[j, i]._char);
+                 Console.BackgroundColor = Field[j, i]._color;
+                 Console.Write(Field[j, i]._char);
 
                  if(j == FieldWidth - 1)
                      Console.WriteLine();
@@ -117,7 +117,7 @@
      public void BuildBufferField(GameSigns[,] gameField, int x,int y)
      {
          ReadFile();
-         Array.Clear(_field);   
+         Array.Clear(Field);   
          IndicateHorizontalLines();
          IndicateVerticalLines();
          HandlePointer(x,y);
@@ -135,7 +135,7 @@
          
          int xPointerIndex = FindIndex(x,y).X;
          int yPointerIndex = FindIndex(x, y).Y;
-         _field[xPointerIndex, yPointerIndex] = pointer;
+         Field[xPointerIndex, yPointerIndex] = pointer;
 
 
      }
@@ -155,9 +155,9 @@
                  int y = FindIndex(j, i).Y;
 
                  if (gameField[j, i] == GameSigns.O)
-                     _field = InsertSign(_field, _fileHandler.GetSignPicture(GameSigns.O), x, y,ColorO);
+                     Field = InsertSign(Field, _fileHandler.GetSignPicture(GameSigns.O), x, y,ColorO);
                  if (gameField[j, i] == GameSigns.X)    
-                     _field = InsertSign(_field, _fileHandler.GetSignPicture(GameSigns.X), x, y,ColorX);
+                     Field = InsertSign(Field, _fileHandler.GetSignPicture(GameSigns.X), x, y,ColorX);
              }
          }
      }
@@ -166,13 +166,13 @@
      {
          for (int i = 0; i < FieldHeight; i++)
          {
-             _field[0, i]._char = '#';
+             Field[0, i]._char = '#';
              
-             _field[1 + _cellWidth, i]._char = '#';
+             Field[1 + _cellWidth, i]._char = '#';
 
-             _field[2 + 2 * _cellWidth , i]._char = '#';
+             Field[2 + 2 * _cellWidth , i]._char = '#';
 
-             _field[3 + 3 * _cellWidth , i]._char = '#';
+             Field[3 + 3 * _cellWidth , i]._char = '#';
          }
          
      }
@@ -181,13 +181,13 @@
      {
          for (int i = 0; i < FieldWidth; i++)
          {
-             _field[i, 0]._char = '#';
+             Field[i, 0]._char = '#';
 
-             _field[i, 1 + _cellHeight]._char = '#';
+             Field[i, 1 + _cellHeight]._char = '#';
 
-             _field[i, 2 + 2 * _cellHeight]._char = '#';
+             Field[i, 2 + 2 * _cellHeight]._char = '#';
 
-             _field[i, 3 + 3 * _cellHeight]._char = '#';
+             Field[i, 3 + 3 * _cellHeight]._char = '#';
          }
      }
 

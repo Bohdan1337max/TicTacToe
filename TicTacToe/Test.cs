@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Threading.Tasks;
 
 namespace TicTacToe;
 
@@ -17,7 +18,18 @@ public class Test
 
         Console.WriteLine(std1.StudentName);
     }
+
+    public async Task<int> ATask(int x)
+    {
+        Console.WriteLine($"Start waiting {x}");
+        await Task.Delay(x * 1000);
+        Console.WriteLine($"Waiting {x} sex");
+
+        
+        return x;
+    }
 }
+
 
 internal struct Student
 {

@@ -1,21 +1,28 @@
 ﻿using System;
+using System.Diagnostics;
+using System.Linq;
+using System.Net.Http;
+using System.Net.Http.Json;
+using System.Text;
+using System.Text.Json;
+using System.Text.Json.Serialization;
+using System.Threading.Tasks;
+using Newtonsoft.Json;
 
 namespace TicTacToe;
 
-//TODO Clear console after turn
 class Program
 { 
-    static void Main(string[] args)
+    static async Task Main(string[] args)
     {
         Game game = new Game();
         FieldPainter fieldPainter = new();
         InputHandler inputHandler = new InputHandler();
-        Test test = new Test();
-        FileHandler fileHandler = new FileHandler();
-
+        //using var client = new HttpClient();
 
         game.ShowWelcomeNotification();
         GetGameParams(args, game,fieldPainter);
+        
         while (!game.IsGameEnd)
         {
             // var numpadTurnInput = HandleInput();
@@ -28,10 +35,33 @@ class Program
                 game.MakeTurn(inputHandler.X, inputHandler.Y);
             }
 
+            
+            await MakePost(game.GameField, inputHandler.X, inputHandler.Y, game.currentSign);
+            
             fieldPainter.PaintGameField(game.GameField, inputHandler.X, inputHandler.Y);
+              
         }
 
         game.ShowEndGameNotification(game.Winner);
+    }
+    
+    
+    static async Task MakePost(GameSigns[,] gameField, int pointerX, int pointerY, GameSigns currentSign)
+    {
+        using var client = new HttpClient();
+        GameSigns[] gameField2D = gameField.Cast<GameSigns>().ToArray();
+        var obj = new
+        {
+            GameFild = gameField2D,
+            PointCoordinateX = pointerX,
+            PointCoordinateY = pointerY,
+            CurrentSign = currentSign
+        };
+        var content = JsonContent.Create(obj);
+        var result = await client.PostAsync("http://localhost:5213/TicTacToe",content);
+        string resultContent = await result.Content.ReadAsStringAsync();
+        Console.WriteLine(resultContent);
+
     }
 
 
@@ -40,20 +70,18 @@ class Program
         //add dependency sing and color in the console
         string colorX;
         string colorO;
-        GameSigns gameSing;
         if (args.Length < 1)
             return;
 
         if (args[0] == "O")
         {
             game.currentSign = GameSigns.O;
-            gameSing = GameSigns.O;
         }
 
         if (args[0] == "X")
         {
             game.currentSign = GameSigns.X;
-            gameSing = GameSigns.X;
+           
         }
         
 
