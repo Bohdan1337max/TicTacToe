@@ -1,6 +1,7 @@
 # Common IntelliJ Platform excludes
 
 # User specific
+
 **/.idea/**/workspace.xml
 **/.idea/**/tasks.xml
 **/.idea/shelf/*
@@ -23,6 +24,8 @@
 
 *.suo
 *.user
+**/.idea
+.idea
 .vs/
 [Bb]in/
 [Oo]bj/
