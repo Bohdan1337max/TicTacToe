@@ -22,9 +22,12 @@ internal static class Program
 
         game.ShowWelcomeNotification();
         GetGameParams(args, game,fieldPainter);
-        
+
+        await JoinToTheGame();
+
         while (!game.IsGameEnd)
         {
+            
             // var numpadTurnInput = HandleInput();
             fieldPainter.PaintGameField(game.GameField, inputHandler.X, inputHandler.Y);
             var key = Console.ReadKey(true);
@@ -33,9 +36,9 @@ internal static class Program
             if (key.Key == ConsoleKey.Enter)
             {
                 game.MakeTurn(inputHandler.X, inputHandler.Y);
+                await MakePost(game, inputHandler.X, inputHandler.Y);
             }
             
-            await MakePost(game, inputHandler.X, inputHandler.Y);
             
             fieldPainter.PaintGameField(game.GameField, inputHandler.X, inputHandler.Y);
             
@@ -47,18 +50,32 @@ internal static class Program
     
     static async Task MakePost(Game game, int pointerX, int pointerY)
     {
-        using var client = new HttpClient();
-        var gameState = game.GameStateCollector();
-        gameState.PointerCoordinateX = pointerX;
-        gameState.PointerCoordinateY = pointerY;
+        try
+        {
+            const string baseUrl = "http://localhost:5213/TicTacToe";
+            using var client = new HttpClient();
+            var gameState = game.GameStateCollector();
+            gameState.PointerCoordinateX = pointerX;
+            gameState.PointerCoordinateY = pointerY;
         
-        var content = JsonContent.Create(gameState);
-        var result = await client.PostAsync("http://localhost:5213/TicTacToe",content);
-        string resultContent = await result.Content.ReadAsStringAsync();
-        Console.WriteLine(resultContent);
-
+            var content = JsonContent.Create(gameState);
+            var response = await client.PostAsync(baseUrl,content);
+        }
+        catch (HttpRequestException ex)
+        {
+            Console.WriteLine("Request error: " + ex.Message);
+        }
+       
     }
 
+    static async Task JoinToTheGame()
+    {
+        const string baseUrl = "http://localhost:5213/TicTacToe/InitPlayer";
+        using var client = new HttpClient();
+        Player player = new Player();
+        var content = JsonContent.Create(player); 
+        var response = await client.PostAsync(baseUrl,content);
+    }
 
     public static void GetGameParams(string[] args, Game game, FieldPainter fieldPainter)
     {
