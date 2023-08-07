@@ -86,7 +86,6 @@ public class Game
         return new GameState()
         {
             GameField = gameField2D,
-            CurrentSign = currentSign
         };
 
     }
