@@ -13,7 +13,7 @@ public class Game
     };
    
     public GameSigns Winner; 
-    public readonly GameSigns[,] GameField = new GameSigns[3, 3];
+    public GameSigns[,] GameField = new GameSigns[3, 3];
     public GameSigns currentSign = GameSigns.X;
     public bool IsGameEnd;
 
@@ -83,9 +83,14 @@ public class Game
     public GameState GameStateCollector()
     {
         GameSigns[] gameField2D = GameField.Cast<GameSigns>().ToArray();
+        //TODO Sign Collect!
+        GameSigns turnSign = GameSigns.O;
+        if (turnSign == currentSign)
+            turnSign = GameSigns.X;
         return new GameState()
         {
             GameField = gameField2D,
+            TurnSign = turnSign
         };
 
     }

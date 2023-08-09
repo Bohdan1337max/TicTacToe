@@ -8,13 +8,7 @@
      X,
          
  }
-
- public enum FieldDye
- {
-     EmptySpace,
-     Sign
-     
- }
+ 
  
  // Зробити сервер для чепухи 
  // 3 окремих процесів

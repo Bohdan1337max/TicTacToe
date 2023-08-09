@@ -2,12 +2,14 @@ using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Mvc;
 
 namespace ServerAP.Controllers;
+[ApiController]
+[Route("LongPolling")]
 
 public class LongPollingController : ControllerBase
 {
-    private static PollingHandler handler = new PollingHandler();
+    private static PollingHandler handler = new ();
     
-//make post and end longPoll
+
     [HttpGet("Poll")]
     public async Task<IActionResult> LongPoll()
     {
@@ -19,16 +21,24 @@ public class LongPollingController : ControllerBase
         
         
         return Ok(handler.Consume());
-        
     }
 
-    [HttpPost( "Post")]
-
-    public IActionResult SendData( GameState gameState)
+    
+    [HttpPost( "PostGameState")]
+    public IActionResult SendGameState(GameState gameState)
     {
+        if (gameState.TurnSign != TicTacToeController.CurrentTurnSign)
+            return BadRequest("now it's the other player's turn");
+        
         handler.Notify(gameState);
-        return Ok();
+        TicTacToeController.CurrentTurnSign = gameState.TurnSign == GameSigns.X ? GameSigns.O : GameSigns.X;
+        
+        return Ok(gameState);
     }
-
-
+    
 }
+
+
+
+
+

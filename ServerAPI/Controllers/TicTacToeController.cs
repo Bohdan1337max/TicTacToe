@@ -9,6 +9,8 @@ public class TicTacToeController : ControllerBase
     
     public static List<GameState> GameStates = new ();
     public static List<Player> Players = new ();
+    public static GameSigns CurrentTurnSign { get; set; } = GameSigns.X;
+
 
     [HttpGet]
     public IActionResult GetGameState()
@@ -16,14 +18,13 @@ public class TicTacToeController : ControllerBase
         return Ok(GameStates);
     }
 
-    [HttpPost]
+    [HttpPost("PostGS")]
     public IActionResult PostGameState(GameState gameState)
     {
         GameStates.Add(gameState);
-        
-        return Ok();
+        return Ok(gameState);
     }
-
+    
     [HttpPost("AddPlayer")]
     public IActionResult AddPlayerPost(Player player)
     {
@@ -33,12 +34,12 @@ public class TicTacToeController : ControllerBase
                 player.Id = 1;
                 player.Sign = GameSigns.X;
                 Players.Add(player);
-                return Ok(player);
+                return Ok(GameSigns.X);
             case 1:
                 player.Id = 2;
                 player.Sign = GameSigns.O;
                 Players.Add(player);
-                return Ok("Last player connected");
+                return Ok(GameSigns.O);
             default:
                 return NotFound("Room is Full");
         }

@@ -5,9 +5,7 @@ namespace ServerAP;
 
 public class PollingHandler
 {
-    
-    
-    public bool Notified { get;  set; }
+    public bool Notified { get; private set; }
     
     
     public void Notify(GameState gameState)
@@ -18,8 +16,8 @@ public class PollingHandler
     public GameState Consume()
     {
         Notified = false;
-
         var lastGameState = TicTacToeController.GameStates.LastOrDefault();
+        
         return lastGameState ?? new GameState();
     }
 }
