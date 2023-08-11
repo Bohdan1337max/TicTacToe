@@ -22,11 +22,14 @@ internal static class Program
         game.ShowWelcomeNotification();
         GetGameParams(args, game, fieldPainter);
         //make waiting room
-        var joined = await JoinToTheGame(game);
-        if (!joined)
+        await JoinToTheGame(game);
+        var isGameStart = await IsGameStarted();
+        while (!isGameStart)
         {
-            return;
+             isGameStart = await IsGameStarted();
+             Console.WriteLine("Waiting for second player"); 
         }
+
             
         while (!game.IsGameEnd)
         {
@@ -135,9 +138,17 @@ internal static class Program
         if (!response.IsSuccessStatusCode) return false;
         var definedPlayerSign = JsonSerializer.Deserialize<GameSigns>(responseContent);
         game.currentSign = definedPlayerSign;
-        return true;
+        return definedPlayerSign == GameSigns.O;
+    }
 
-
+    static async Task<bool> IsGameStarted()
+    {
+        const string baseUrl = "http://localhost:5213/TicTacToe/GetLastPlayer";
+        using var client = new HttpClient();
+        var response = await client.GetAsync(baseUrl);
+        string responseContent = await response.Content.ReadAsStringAsync();
+        var definedPlayerSign = JsonSerializer.Deserialize<GameSigns>(responseContent);
+        return definedPlayerSign == GameSigns.O;
     }
 
     private static void GetGameParams(string[] args, Game game, FieldPainter fieldPainter)

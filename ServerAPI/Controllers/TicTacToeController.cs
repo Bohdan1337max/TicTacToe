@@ -48,7 +48,19 @@ public class TicTacToeController : ControllerBase
     [HttpGet("PlayersGet")]
     public IActionResult GetPlayers()
     {
+        
+        
+        
         return Ok(Players);
+    }
+
+    [HttpGet("GetLastPlayer")]
+    public IActionResult GetLastPlayer()
+    {
+        var lastConnectedPlayer = Players.LastOrDefault();
+
+        if (lastConnectedPlayer != null) return Ok(lastConnectedPlayer.Sign);
+        return BadRequest("LastConnectedPlayerProblem");
     }
     
 }
