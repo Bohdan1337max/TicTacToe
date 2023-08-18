@@ -32,7 +32,7 @@ internal static class Program
              Console.WriteLine("Waiting for second player"); 
         }
 
-        if (game.currentSign == GameSigns.O)
+        if (game.CurrentSign == GameSigns.O)
         {
             await services.GetGameState(game);
         }
@@ -64,12 +64,12 @@ internal static class Program
 
         if (args[0] == "O")
         {
-            game.currentSign = GameSigns.O;
+            game.CurrentSign = GameSigns.O;
         }
 
         if (args[0] == "X")
         {
-            game.currentSign = GameSigns.X;
+            game.CurrentSign = GameSigns.X;
            
         }
         

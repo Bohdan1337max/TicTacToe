@@ -7,7 +7,6 @@ public class PollingHandler
 {
     public bool Notified { get; private set; }
     
-    
     public void Notify(GameState gameState)
     {
         Notified = true;

@@ -28,7 +28,7 @@ public class Services
         var startGameInfo = JsonSerializer.Deserialize<StartGameInfo>(responseContent, _options);
         if (startGameInfo != null)
         {
-            game.currentSign = startGameInfo.PlayerSign;
+            game.CurrentSign = startGameInfo.PlayerSign;
             game.GameField = ConvertTo2DArray(startGameInfo.GameState.GameField);
         }
     }
@@ -87,7 +87,7 @@ public class Services
     {
         var gameState = JsonSerializer.Deserialize<GameState>(responseContent, options: _options);
         if (gameState == null) return;
-        game.currentSign = gameState.TurnSign;
+        game.CurrentSign = gameState.TurnSign;
         game.GameField = ConvertTo2DArray(gameState.GameField);
     }
 
