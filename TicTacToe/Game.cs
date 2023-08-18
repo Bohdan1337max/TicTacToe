@@ -2,7 +2,13 @@
 using System.Linq;
 
 namespace TicTacToe;
-
+public enum GameSigns
+{
+    Empty,
+    O,
+    X,
+         
+}
 public class Game
 {
     private readonly int[,] _field = new int[3, 3]
@@ -44,7 +50,7 @@ public class Game
             return;
         }
         
-        ChangeGameSign();
+        //ChangeGameSign();
         CheckIsFieldComplete();
     }
 
@@ -83,17 +89,13 @@ public class Game
     public GameState GameStateCollector()
     {
         GameSigns[] gameField2D = GameField.Cast<GameSigns>().ToArray();
-        //TODO Sign Collect!
-        GameSigns turnSign = GameSigns.O;
-        if (turnSign == currentSign)
-            turnSign = GameSigns.X;
         return new GameState()
         {
             GameField = gameField2D,
-            TurnSign = turnSign
+            TurnSign = currentSign
         };
-
     }
+    
     private bool FindWinCombination(int x, int y)
     {
         if (FindVerticalWinCombination(x, y) >= 2)
@@ -138,7 +140,7 @@ public class Game
                 {
                     winCombination++;
                 }
-
+                
                 return winCombination;
             }
             case 2:
@@ -244,6 +246,7 @@ public class Game
     private void CheckIsFieldComplete()
     {
         var emptySpaceCounter = 0;
+        
         for (int i = 0; i < 3; i++)
         {
             for (int j = 0; j < 3; j++)
@@ -252,6 +255,7 @@ public class Game
                     emptySpaceCounter++;
             }
         }
+        
         if (emptySpaceCounter != 0)
         {
             return;

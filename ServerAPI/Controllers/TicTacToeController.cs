@@ -1,66 +1,57 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 
 namespace ServerAP.Controllers;
+
 [ApiController]
 [Route("TicTacToe")]
-
 public class TicTacToeController : ControllerBase
 {
-    
-    public static List<GameState> GameStates = new ();
-    public static List<Player> Players = new ();
-    public static GameSigns CurrentTurnSign { get; set; } = GameSigns.X;
-
-
     [HttpGet]
     public IActionResult GetGameState()
     {
-        return Ok(GameStates);
+        return Ok(ServerGame.GameState);
     }
 
     [HttpPost("PostGS")]
     public IActionResult PostGameState(GameState gameState)
     {
-        GameStates.Add(gameState);
+        ServerGame.GameState = gameState;
         return Ok(gameState);
     }
-    
+
     [HttpPost("AddPlayer")]
     public IActionResult AddPlayerPost(Player player)
     {
-        switch (Players.Count)
+        var startGameInfo = new StartGameInfo {GameState = ServerGame.GameState};
+        
+        switch (ServerGame.Players.Count)
         {
             case 0:
                 player.Id = 1;
                 player.Sign = GameSigns.X;
-                Players.Add(player);
-                return Ok(GameSigns.X);
+                ServerGame.Players.Add(player);
+                startGameInfo.PlayerSign = GameSigns.X;
+                return Ok(startGameInfo);
             case 1:
                 player.Id = 2;
                 player.Sign = GameSigns.O;
-                Players.Add(player);
-                return Ok(GameSigns.O);
+                startGameInfo.PlayerSign = GameSigns.O;
+                ServerGame.Players.Add(player);
+                return Ok(startGameInfo);
             default:
-                return NotFound("Room is Full");
+                return BadRequest("Room is Full");
         }
     }
 
     [HttpGet("PlayersGet")]
     public IActionResult GetPlayers()
     {
-        
-        
-        
-        return Ok(Players);
+        return Ok(ServerGame.Players);
     }
 
-    [HttpGet("GetLastPlayer")]
-    public IActionResult GetLastPlayer()
+    [HttpGet("IsGameReady")]
+    public IActionResult IsGameReady()
     {
-        var lastConnectedPlayer = Players.LastOrDefault();
-
-        if (lastConnectedPlayer != null) return Ok(lastConnectedPlayer.Sign);
-        return BadRequest("LastConnectedPlayerProblem");
+        return Ok(ServerGame.Players.Count == 2);
     }
-    
 }

@@ -18,27 +18,19 @@ public class LongPollingController : ControllerBase
         {
             await Task.Delay(1000);
         }
-        
-        
         return Ok(handler.Consume());
     }
-
     
     [HttpPost( "PostGameState")]
     public IActionResult SendGameState(GameState gameState)
     {
-        if (gameState.TurnSign != TicTacToeController.CurrentTurnSign)
+        if (gameState.TurnSign != ServerGame.CurrentTurnSign)
             return BadRequest("now it's the other player's turn");
         
+        ServerGame.CurrentTurnSign = gameState.TurnSign == GameSigns.X ? GameSigns.O : GameSigns.X;
         handler.Notify(gameState);
-        TicTacToeController.CurrentTurnSign = gameState.TurnSign == GameSigns.X ? GameSigns.O : GameSigns.X;
+        gameState.TurnSign = ServerGame.CurrentTurnSign;
         
         return Ok(gameState);
     }
-    
 }
-
-
-
-
-

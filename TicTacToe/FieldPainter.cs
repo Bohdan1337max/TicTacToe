@@ -1,16 +1,9 @@
 ﻿using System;
- 
- namespace TicTacToe;
- public enum GameSigns
- {
-     Empty,
-     O,
-     X,
-         
- }
- 
- 
- // Зробити сервер для чепухи 
+using System.Text.Json.Serialization;
+
+namespace TicTacToe;
+
+// Зробити сервер для чепухи 
  // 3 окремих процесів
  // http client
  // like API
@@ -91,8 +84,8 @@
          {
              for (int j = 0; j < FieldWidth; j++)
              {
-                 Console.BackgroundColor = Field[j, i]._color;
-                 Console.Write(Field[j, i]._char);
+                 Console.BackgroundColor = Field[j, i].Color;
+                 Console.Write(Field[j, i].Char);
 
                  if(j == FieldWidth - 1)
                      Console.WriteLine();
@@ -123,8 +116,8 @@
      {
          var pointer = new Pixel
          {
-             _char = '*',
-             _color = ConsoleColor.DarkRed
+             Char = '*',
+             Color = ConsoleColor.DarkRed
          };
          
          int xPointerIndex = FindIndex(x,y).X;
@@ -160,13 +153,13 @@
      {
          for (int i = 0; i < FieldHeight; i++)
          {
-             Field[0, i]._char = '#';
+             Field[0, i].Char = '#';
              
-             Field[1 + _cellWidth, i]._char = '#';
+             Field[1 + _cellWidth, i].Char = '#';
 
-             Field[2 + 2 * _cellWidth , i]._char = '#';
+             Field[2 + 2 * _cellWidth , i].Char = '#';
 
-             Field[3 + 3 * _cellWidth , i]._char = '#';
+             Field[3 + 3 * _cellWidth , i].Char = '#';
          }
          
      }
@@ -175,13 +168,13 @@
      {
          for (int i = 0; i < FieldWidth; i++)
          {
-             Field[i, 0]._char = '#';
+             Field[i, 0].Char = '#';
 
-             Field[i, 1 + _cellHeight]._char = '#';
+             Field[i, 1 + _cellHeight].Char = '#';
 
-             Field[i, 2 + 2 * _cellHeight]._char = '#';
+             Field[i, 2 + 2 * _cellHeight].Char = '#';
 
-             Field[i, 3 + 3 * _cellHeight]._char = '#';
+             Field[i, 3 + 3 * _cellHeight].Char = '#';
          }
      }
 
@@ -195,7 +188,7 @@
              {
                  if (signPictureArray[iteratorY,iteratorX] == 1)
                  {
-                     field[j, i]._char = '#';
+                     field[j, i].Char = '#';
                  }
 
                  if (iteratorX == _cellWidth - 1)
@@ -226,8 +219,8 @@
          {
              for (int j = x + 2; j < x + 2 + signPictureArray[iteratorY].Length; j++)
              {
-                 field[j, i]._char = signPictureArray[iteratorY][iteratorX];
-                 field[j, i]._color = color;
+                 field[j, i].Char = signPictureArray[iteratorY][iteratorX];
+                 field[j, i].Color = color;
                  if (iteratorX == signPictureArray[iteratorY].Length - 1)
                  {
                      iteratorX = 0;

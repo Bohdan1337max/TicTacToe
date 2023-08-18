@@ -11,13 +11,12 @@ public class PollingHandler
     public void Notify(GameState gameState)
     {
         Notified = true;
-        TicTacToeController.GameStates.Add(gameState);
+        ServerGame.GameState = gameState;
+       
     }
     public GameState Consume()
     {
         Notified = false;
-        var lastGameState = TicTacToeController.GameStates.LastOrDefault();
-        
-        return lastGameState ?? new GameState();
+        return ServerGame.GameState;
     }
 }

@@ -7,7 +7,7 @@ namespace TicTacToe;
 public class FileHandler
 {
     private static string _pathX = @".\Models\X.txt";
-    private string _pathO = @".\Models\O.txt";
+    private static string _pathO = @".\Models\O.txt";
     public int CellWidth { get; set; }
     public int CellHeight { get; set; }
 
@@ -35,5 +35,4 @@ public class FileHandler
 
         return content;
     }
-
 }
