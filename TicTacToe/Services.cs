@@ -1,4 +1,5 @@
 using System;
+using System.Linq;
 using System.Net.Http;
 using System.Net.Http.Json;
 using System.Text;
@@ -21,7 +22,10 @@ public class Services
     {
         const string baseUrl = "http://localhost:5213/TicTacToe/AddPlayer";
         using var client = new HttpClient();
-        Player player = new Player();
+        //var clientStartGameInfo = new StartGameInfo();
+        //GameSigns[] gameField2D = game.GameField.Cast<GameSigns>().ToArray();
+        //clientStartGameInfo.GameState.GameField = gameField2D;
+        var player = new Player();
         var content = JsonContent.Create(player);
         var response = await client.PostAsync(baseUrl, content);
         string responseContent = await response.Content.ReadAsStringAsync();

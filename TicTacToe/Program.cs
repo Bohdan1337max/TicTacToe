@@ -1,12 +1,4 @@
 ﻿using System;
-using System.Diagnostics;
-using System.Linq;
-using System.Net.Http;
-using System.Net.Http.Json;
-using System.Text;
-using System.Text.Json;
-using System.Text.Json.Serialization;
-using System.Threading;
 using System.Threading.Tasks;
 
 namespace TicTacToe;
@@ -36,7 +28,7 @@ internal static class Program
         {
             await services.GetGameState(game);
         }
-
+            //TODO Check if player can make turn!
         //server should  control Is game End  
         while (!game.IsGameEnd)
         {

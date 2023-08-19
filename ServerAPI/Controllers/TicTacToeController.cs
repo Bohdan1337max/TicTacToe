@@ -22,20 +22,24 @@ public class TicTacToeController : ControllerBase
     [HttpPost("AddPlayer")]
     public IActionResult AddPlayerPost(Player player)
     {
-        var startGameInfo = new StartGameInfo {GameState = ServerGame.GameState};
         
+        var startGameInfo = new StartGameInfo() {GameState = new GameState
+            {
+                GameField = new GameSigns[9]
+            }
+        };
         switch (ServerGame.Players.Count)
         {
             case 0:
                 player.Id = 1;
                 player.Sign = GameSigns.X;
                 ServerGame.Players.Add(player);
-                startGameInfo.PlayerSign = GameSigns.X;
+                startGameInfo.PlayerSign = player.Sign;
                 return Ok(startGameInfo);
             case 1:
                 player.Id = 2;
                 player.Sign = GameSigns.O;
-                startGameInfo.PlayerSign = GameSigns.O;
+                startGameInfo.PlayerSign = player.Sign;
                 ServerGame.Players.Add(player);
                 return Ok(startGameInfo);
             default:
