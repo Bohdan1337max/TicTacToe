@@ -30,9 +30,11 @@ public class Services
         var response = await client.PostAsync(baseUrl, content);
         string responseContent = await response.Content.ReadAsStringAsync();
         var startGameInfo = JsonSerializer.Deserialize<StartGameInfo>(responseContent, _options);
+        
         if (startGameInfo != null)
         {
             game.CurrentSign = startGameInfo.PlayerSign;
+            game.SignFromServer = startGameInfo.GameState.TurnSign;
             game.GameField = ConvertTo2DArray(startGameInfo.GameState.GameField);
         }
     }
@@ -46,18 +48,20 @@ public class Services
         return responseContent == "true";
     }
 
-    public async Task PostGameState(Game game)
+    public async Task ServerMakeTurn(Game game)
     {
         try
         {
-            const string baseUrl = "http://localhost:5213/LongPolling/PostGameState";
+            const string baseUrl = "http://localhost:5213/LongPolling/MakeTurn";
             using var client = new HttpClient();
             var gameState = game.GameStateCollector();
             var jsonContent = JsonSerializer.Serialize(gameState, options: _options);
             StringContent content = new StringContent(jsonContent, Encoding.UTF8, "application/json");
             var response = await client.PostAsync(baseUrl, content);
-            string responseContentString = await response.Content.ReadAsStringAsync();
+            var responseContentString = await response.Content.ReadAsStringAsync();
             var responseContent = JsonSerializer.Deserialize<GameState>(responseContentString, options: _options);
+            if (responseContent != null) 
+                game.SignFromServer = responseContent.TurnSign;
         }
         catch (HttpRequestException ex)
         {
@@ -66,18 +70,18 @@ public class Services
     }
 
 
-    public async Task GetGameState(Game game)
+    public async Task WaitForTurn(Game game)
     {
         try
         {
-            const string baseUrl = "http://localhost:5213/LongPolling/Poll";
+            const string baseUrl = "http://localhost:5213/LongPolling/WaitForTurn";
             using var client = new HttpClient();
             client.Timeout = TimeSpan.FromMilliseconds(Timeout.Infinite);
             var response = await client.GetAsync(baseUrl);
             if (response.IsSuccessStatusCode)
             {
                 string responseContent = await response.Content.ReadAsStringAsync();
-                DeserializeGameStateFromJson(responseContent, game);
+                DeserializeGameStateFromJson(responseContent,game);
             }
         }
         catch (HttpRequestException ex)
@@ -87,11 +91,11 @@ public class Services
     }
 
 
-    private void DeserializeGameStateFromJson(string responseContent, Game game)
+    private void DeserializeGameStateFromJson(string responseContent, Game game )
     {
         var gameState = JsonSerializer.Deserialize<GameState>(responseContent, options: _options);
         if (gameState == null) return;
-        game.CurrentSign = gameState.TurnSign;
+        game.CurrentSign= gameState.TurnSign;
         game.GameField = ConvertTo2DArray(gameState.GameField);
     }
 

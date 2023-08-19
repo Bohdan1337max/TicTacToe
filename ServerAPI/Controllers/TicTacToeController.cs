@@ -23,9 +23,11 @@ public class TicTacToeController : ControllerBase
     public IActionResult AddPlayerPost(Player player)
     {
         
-        var startGameInfo = new StartGameInfo() {GameState = new GameState
+        var startGameInfo = new StartGameInfo() {
+            GameState = new GameState
             {
-                GameField = new GameSigns[9]
+                GameField = new GameSigns[9],
+                TurnSign = ServerGame.CurrentTurnSign
             }
         };
         switch (ServerGame.Players.Count)

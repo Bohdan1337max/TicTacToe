@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Linq;
+using System.Threading.Tasks;
 
 namespace TicTacToe;
 public enum GameSigns
@@ -22,6 +23,8 @@ public class Game
     public GameSigns[,] GameField = new GameSigns[3, 3];
     public GameSigns CurrentSign = GameSigns.X;
     public bool IsGameEnd;
+    private Services _services = new Services();
+    public GameSigns SignFromServer { get; set; }
 
     public void MakeTurn(int numpadTurnInput)
     {
@@ -39,9 +42,16 @@ public class Game
 
     public void MakeTurn(int x, int y)
     {
-
+        GameSigns[] gameField2D = GameField.Cast<GameSigns>().ToArray();
         if (GameField[x, y] != GameSigns.Empty)
             return;
+        if (!IsNowMyTurn())
+        {
+            //WaitForTurn 
+            Console.WriteLine("now it's the other player's turn");
+            return;    
+        }
+        
         GameField[x, y] = CurrentSign;
         if (FindWinCombination(x, y))
         {
@@ -50,7 +60,6 @@ public class Game
             return;
         }
         
-        //ChangeGameSign();
         CheckIsFieldComplete();
     }
 
@@ -103,6 +112,11 @@ public class Game
         if (FindHorizontalWinCombination(x, y) >= 2)
             return true;
         return FindDiagonalWinCombination(x, y) >= 2;
+    }
+
+    private bool IsNowMyTurn()
+    {
+        return CurrentSign == SignFromServer;
     }
 
     private int FindVerticalWinCombination(int x, int y)

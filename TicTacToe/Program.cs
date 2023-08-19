@@ -24,11 +24,7 @@ internal static class Program
              Console.WriteLine("Waiting for second player"); 
         }
 
-        if (game.CurrentSign == GameSigns.O)
-        {
-            await services.GetGameState(game);
-        }
-            //TODO Check if player can make turn!
+        
         //server should  control Is game End  
         while (!game.IsGameEnd)
         {
@@ -39,7 +35,6 @@ internal static class Program
             if (key.Key == ConsoleKey.Enter)
             {
                 game.MakeTurn(inputHandler.X, inputHandler.Y);
-                await services.PostGameState(game);
             }
             fieldPainter.PaintGameField(game.GameField, inputHandler.X, inputHandler.Y);
         }
