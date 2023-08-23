@@ -95,7 +95,7 @@ public class Services
     {
         var gameState = JsonSerializer.Deserialize<GameState>(responseContent, options: _options);
         if (gameState == null) return;
-        game.CurrentSign= gameState.TurnSign;
+        game.SignFromServer = gameState.TurnSign;
         game.GameField = ConvertTo2DArray(gameState.GameField);
     }
 

@@ -26,7 +26,7 @@ public class Game
     private Services _services = new Services();
     public GameSigns SignFromServer { get; set; }
 
-    public void MakeTurn(int numpadTurnInput)
+    public async void MakeTurn(int numpadTurnInput)
     {
         for (int i = 0; i < 3; i++)
         {
@@ -34,25 +34,25 @@ public class Game
             {
                 if (_field[i, j] == numpadTurnInput)
                 {
-                    MakeTurn(i,j);
+                    await MakeTurn(i,j);
                 }
             }
         }
     }
 
-    public void MakeTurn(int x, int y)
+    public async Task MakeTurn(int x, int y)
     {
-        GameSigns[] gameField2D = GameField.Cast<GameSigns>().ToArray();
         if (GameField[x, y] != GameSigns.Empty)
             return;
         if (!IsNowMyTurn())
         {
-            //WaitForTurn 
             Console.WriteLine("now it's the other player's turn");
+            await _services.WaitForTurn( this);
             return;    
         }
         
         GameField[x, y] = CurrentSign;
+        await _services.ServerMakeTurn(this);
         if (FindWinCombination(x, y))
         {
             Winner = CurrentSign;
@@ -61,6 +61,8 @@ public class Game
         }
         
         CheckIsFieldComplete();
+        
+        
     }
 
     private void ChangeGameSign()

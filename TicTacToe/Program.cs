@@ -34,7 +34,7 @@ internal static class Program
 
             if (key.Key == ConsoleKey.Enter)
             {
-                game.MakeTurn(inputHandler.X, inputHandler.Y);
+                await game.MakeTurn(inputHandler.X, inputHandler.Y);
             }
             fieldPainter.PaintGameField(game.GameField, inputHandler.X, inputHandler.Y);
         }
