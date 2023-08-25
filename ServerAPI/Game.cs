@@ -1,50 +1,20 @@
-﻿using System;
-using System.Linq;
-using System.Threading.Tasks;
+namespace ServerAP;
 
-namespace TicTacToe;
-public enum GameSigns
-{
-    Empty,
-    O,
-    X,
-         
-}
 public class Game
 {
     private readonly int[,] _field = new int[3, 3]
-    { // 0  1  2
+    {
+        // 0  1  2
         {7, 8, 9}, //0
         {4, 5, 6}, //1
-        {1, 2, 3}  //2
+        {1, 2, 3} //2
     };
 
     public GameSigns Winner { get; set; }
     public GameSigns[,] GameField = new GameSigns[3, 3];
     public GameSigns CurrentSign = GameSigns.X;
     public bool IsGameEnd;
-    private readonly Services _services;
-
-    public Game(Services services)
-    {
-        _services = services;
-    }
-
     public GameSigns SignFromServer { get; set; }
-
-    public async void MakeTurn(int numpadTurnInput)
-    {
-        for (int i = 0; i < 3; i++)
-        {
-            for (int j = 0; j < 3; j++)
-            {
-                if (_field[i, j] == numpadTurnInput)
-                {
-                    await MakeTurn(i,j);
-                }
-            }
-        }
-    }
 
     public async Task MakeTurn(int x, int y)
     {
@@ -53,19 +23,17 @@ public class Game
         if (!IsNowMyTurn())
         {
             Console.WriteLine("now it's the other player's turn");
-            await _services.WaitForTurn( this);
-            return;    
+            return;
         }
-        
+
         GameField[x, y] = CurrentSign;
-        await _services.ServerMakeTurn(this);
         if (FindWinCombination(x, y))
         {
             Winner = CurrentSign;
             IsGameEnd = true;
             return;
         }
-        
+
         CheckIsFieldFull();
     }
 
@@ -78,7 +46,6 @@ public class Game
             _ => CurrentSign
         };
     }
-
 
     private bool FindWinCombination(int numpadTurnInput)
     {
@@ -110,7 +77,7 @@ public class Game
             TurnSign = CurrentSign
         };
     }
-    
+
     private bool FindWinCombination(int x, int y)
     {
         if (FindVerticalWinCombination(x, y) >= 2)
@@ -161,7 +128,7 @@ public class Game
                 {
                     winCombination++;
                 }
-                
+
                 return winCombination;
             }
             case 2:
@@ -188,7 +155,7 @@ public class Game
 
     private int FindHorizontalWinCombination(int x, int y)
     {
-        var sign = GameField[x,y];
+        var sign = GameField[x, y];
         int winCombination = 0;
 
         switch (x)
@@ -197,7 +164,7 @@ public class Game
             {
                 while (x < 2)
                 {
-                    if (sign == GameField[ x + 1,y])
+                    if (sign == GameField[x + 1, y])
                     {
                         winCombination++;
                         x++;
@@ -212,12 +179,12 @@ public class Game
             }
             case 1:
             {
-                if (sign == GameField[ x + 1,y])
+                if (sign == GameField[x + 1, y])
                 {
                     winCombination++;
                 }
 
-                if (sign == GameField[ x + 1, y])
+                if (sign == GameField[x + 1, y])
                 {
                     winCombination++;
                 }
@@ -228,7 +195,7 @@ public class Game
             {
                 while (x > 0)
                 {
-                    if (sign == GameField[ x - 1,y])
+                    if (sign == GameField[x - 1, y])
                     {
                         winCombination++;
                         x--;
@@ -254,20 +221,13 @@ public class Game
             return 2;
         if (sign == GameField[0, 0] && sign == GameField[2, 2] && sign == GameField[1, 1])
             return 2;
-
         return 0;
-    }
-
-    public void ShowEndGameNotification(GameSigns winner)
-    {
-        Console.WriteLine(
-            winner == GameSigns.Empty ? "DRAW!! Game field is full" : $"Congratulations {winner} WIN!!!!!");
     }
 
     private void CheckIsFieldFull()
     {
         var emptySpaceCounter = 0;
-        
+
         for (int i = 0; i < 3; i++)
         {
             for (int j = 0; j < 3; j++)
@@ -276,16 +236,13 @@ public class Game
                     emptySpaceCounter++;
             }
         }
-        
+
         if (emptySpaceCounter != 0)
         {
             return;
         }
+
         IsGameEnd = true;
         Winner = GameSigns.Empty;
-    }
-    public void ShowWelcomeNotification()
-    {
-        Console.WriteLine("Welcome! Red# is your pointer.You can use arrows for navigate on the field!");
     }
 }

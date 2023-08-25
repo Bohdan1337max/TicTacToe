@@ -22,7 +22,8 @@ public class TicTacToeController : ControllerBase
     [HttpPost("AddPlayer")]
     public IActionResult AddPlayer(Player player)
     {
-        var startGameInfo = new StartGameInfo() {
+        var startGameInfo = new StartGameInfo()
+        {
             GameState = new GameState
             {
                 GameField = new GameSigns[9],
@@ -30,17 +31,17 @@ public class TicTacToeController : ControllerBase
             }
         };
         var playerSign = ServerGame.Players.Count switch
-            {
-                0 => GameSigns.X,
-                1 => GameSigns.O,
-                _ => GameSigns.Empty
-            };
-            if (playerSign == GameSigns.Empty)
-                return BadRequest("Server is full");
-            player.Id = (int)playerSign;
-            player.Sign = playerSign;
-            startGameInfo.PlayerSign = player.Sign;
-            ServerGame.Players.Add(player);
+        {
+            0 => GameSigns.X,
+            1 => GameSigns.O,
+            _ => GameSigns.Empty
+        };
+        if (playerSign == GameSigns.Empty)
+            return BadRequest("Server is full");
+        player.Id = (int) playerSign;
+        player.Sign = playerSign;
+        startGameInfo.PlayerSign = player.Sign;
+        ServerGame.Players.Add(player);
         return Ok(startGameInfo);
     }
 
