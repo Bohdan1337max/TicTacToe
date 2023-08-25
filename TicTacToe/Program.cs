@@ -1,12 +1,4 @@
 ﻿using System;
-using System.Diagnostics;
-using System.Linq;
-using System.Net.Http;
-using System.Net.Http.Json;
-using System.Text;
-using System.Text.Json;
-using System.Text.Json.Serialization;
-using System.Threading;
 using System.Threading.Tasks;
 
 namespace TicTacToe;
@@ -15,26 +7,21 @@ internal static class Program
 {
     static async Task Main(string[] args)
     {
-        Game game = new Game();
+        var services = new Services();
+        
         FieldPainter fieldPainter = new();
         InputHandler inputHandler = new InputHandler();
-        var services = new Services();
-
+        Game game = new Game(services);
+        
         game.ShowWelcomeNotification();
+        
         GetGameParams(args, game, fieldPainter);
-        
-        
         await services.JoinToTheGame(game);
         
         while (!await services.IsGameStarted())
         {
              await Task.Delay(2000);
              Console.WriteLine("Waiting for second player"); 
-        }
-
-        if (game.CurrentSign == GameSigns.O)
-        {
-            await services.GetGameState(game);
         }
 
         //server should  control Is game End  
@@ -46,8 +33,7 @@ internal static class Program
 
             if (key.Key == ConsoleKey.Enter)
             {
-                game.MakeTurn(inputHandler.X, inputHandler.Y);
-                await services.PostGameState(game);
+                await game.MakeTurn(inputHandler.X, inputHandler.Y);
             }
             fieldPainter.PaintGameField(game.GameField, inputHandler.X, inputHandler.Y);
         }

@@ -7,28 +7,27 @@ namespace ServerAP.Controllers;
 
 public class LongPollingController : ControllerBase
 {
-    private static PollingHandler handler = new ();
-    
+    private static readonly PollingHandler Handler = new ();
 
-    [HttpGet("Poll")]
+    [HttpGet("WaitForTurn")]
     public async Task<IActionResult> LongPoll()
     {
         
-        while (!handler.Notified)
+        while (!Handler.Notified)
         {
             await Task.Delay(1000);
         }
-        return Ok(handler.Consume());
+        return Ok(Handler.Consume());
     }
     
-    [HttpPost( "PostGameState")]
+    [HttpPost( "MakeTurn")]
     public IActionResult SendGameState(GameState gameState)
     {
         if (gameState.TurnSign != ServerGame.CurrentTurnSign)
             return BadRequest("now it's the other player's turn");
         
         ServerGame.CurrentTurnSign = gameState.TurnSign == GameSigns.X ? GameSigns.O : GameSigns.X;
-        handler.Notify(gameState);
+        Handler.Notify(gameState);
         gameState.TurnSign = ServerGame.CurrentTurnSign;
         
         return Ok(gameState);

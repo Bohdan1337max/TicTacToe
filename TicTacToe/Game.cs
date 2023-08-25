@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Linq;
+using System.Threading.Tasks;
 
 namespace TicTacToe;
 public enum GameSigns
@@ -22,8 +23,16 @@ public class Game
     public GameSigns[,] GameField = new GameSigns[3, 3];
     public GameSigns CurrentSign = GameSigns.X;
     public bool IsGameEnd;
+    private readonly Services _services;
 
-    public void MakeTurn(int numpadTurnInput)
+    public Game(Services services)
+    {
+        _services = services;
+    }
+
+    public GameSigns SignFromServer { get; set; }
+
+    public async void MakeTurn(int numpadTurnInput)
     {
         for (int i = 0; i < 3; i++)
         {
@@ -31,18 +40,25 @@ public class Game
             {
                 if (_field[i, j] == numpadTurnInput)
                 {
-                    MakeTurn(i,j);
+                    await MakeTurn(i,j);
                 }
             }
         }
     }
 
-    public void MakeTurn(int x, int y)
+    public async Task MakeTurn(int x, int y)
     {
-
         if (GameField[x, y] != GameSigns.Empty)
             return;
+        if (!IsNowMyTurn())
+        {
+            Console.WriteLine("now it's the other player's turn");
+            await _services.WaitForTurn( this);
+            return;    
+        }
+        
         GameField[x, y] = CurrentSign;
+        await _services.ServerMakeTurn(this);
         if (FindWinCombination(x, y))
         {
             Winner = CurrentSign;
@@ -50,8 +66,7 @@ public class Game
             return;
         }
         
-        //ChangeGameSign();
-        CheckIsFieldComplete();
+        CheckIsFieldFull();
     }
 
     private void ChangeGameSign()
@@ -105,11 +120,17 @@ public class Game
         return FindDiagonalWinCombination(x, y) >= 2;
     }
 
+    private bool IsNowMyTurn()
+    {
+        return CurrentSign == SignFromServer;
+    }
+
     private int FindVerticalWinCombination(int x, int y)
     {
         var sign = GameField[x, y];
         int winCombination = 0;
 
+        //Optimize mathod
         switch (y)
         {
             case 0:
@@ -243,7 +264,7 @@ public class Game
             winner == GameSigns.Empty ? "DRAW!! Game field is full" : $"Congratulations {winner} WIN!!!!!");
     }
 
-    private void CheckIsFieldComplete()
+    private void CheckIsFieldFull()
     {
         var emptySpaceCounter = 0;
         

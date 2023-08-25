@@ -20,27 +20,28 @@ public class TicTacToeController : ControllerBase
     }
 
     [HttpPost("AddPlayer")]
-    public IActionResult AddPlayerPost(Player player)
+    public IActionResult AddPlayer(Player player)
     {
-        var startGameInfo = new StartGameInfo {GameState = ServerGame.GameState};
-        
-        switch (ServerGame.Players.Count)
-        {
-            case 0:
-                player.Id = 1;
-                player.Sign = GameSigns.X;
-                ServerGame.Players.Add(player);
-                startGameInfo.PlayerSign = GameSigns.X;
-                return Ok(startGameInfo);
-            case 1:
-                player.Id = 2;
-                player.Sign = GameSigns.O;
-                startGameInfo.PlayerSign = GameSigns.O;
-                ServerGame.Players.Add(player);
-                return Ok(startGameInfo);
-            default:
-                return BadRequest("Room is Full");
-        }
+        var startGameInfo = new StartGameInfo() {
+            GameState = new GameState
+            {
+                GameField = new GameSigns[9],
+                TurnSign = ServerGame.CurrentTurnSign
+            }
+        };
+        var playerSign = ServerGame.Players.Count switch
+            {
+                0 => GameSigns.X,
+                1 => GameSigns.O,
+                _ => GameSigns.Empty
+            };
+            if (playerSign == GameSigns.Empty)
+                return BadRequest("Server is full");
+            player.Id = (int)playerSign;
+            player.Sign = playerSign;
+            startGameInfo.PlayerSign = player.Sign;
+            ServerGame.Players.Add(player);
+        return Ok(startGameInfo);
     }
 
     [HttpGet("PlayersGet")]
