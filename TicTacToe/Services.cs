@@ -12,6 +12,8 @@ namespace TicTacToe;
 
 public class Services
 {
+    //add http claint in construcktor
+    
     private readonly JsonSerializerOptions _options = new JsonSerializerOptions
     {
         Converters = {new JsonStringEnumConverter()},
@@ -22,9 +24,6 @@ public class Services
     {
         const string baseUrl = "http://localhost:5213/TicTacToe/AddPlayer";
         using var client = new HttpClient();
-        //var clientStartGameInfo = new StartGameInfo();
-        //GameSigns[] gameField2D = game.GameField.Cast<GameSigns>().ToArray();
-        //clientStartGameInfo.GameState.GameField = gameField2D;
         var player = new Player();
         var content = JsonContent.Create(player);
         var response = await client.PostAsync(baseUrl, content);
@@ -68,8 +67,7 @@ public class Services
             Console.WriteLine("Request error: " + ex.Message);
         }
     }
-
-
+    
     public async Task WaitForTurn(Game game)
     {
         try
@@ -111,7 +109,6 @@ public class Services
                 gameField[i, j] = array[index++];
             }
         }
-        
         return gameField;
     }
 }

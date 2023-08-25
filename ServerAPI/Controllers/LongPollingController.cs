@@ -8,7 +8,6 @@ namespace ServerAP.Controllers;
 public class LongPollingController : ControllerBase
 {
     private static readonly PollingHandler Handler = new ();
-    
 
     [HttpGet("WaitForTurn")]
     public async Task<IActionResult> LongPoll()

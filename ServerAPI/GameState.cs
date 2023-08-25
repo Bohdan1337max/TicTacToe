@@ -3,9 +3,9 @@
 namespace ServerAP;
 public enum GameSigns
 {
-    Empty,
-    O,
-    X,
+    Empty = 0,
+    O = 2,
+    X = 1,
 }
 public class GameState
 {

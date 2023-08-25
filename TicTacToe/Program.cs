@@ -7,15 +7,15 @@ internal static class Program
 {
     static async Task Main(string[] args)
     {
-        Game game = new Game();
+        var services = new Services();
+        
         FieldPainter fieldPainter = new();
         InputHandler inputHandler = new InputHandler();
-        var services = new Services();
-
+        Game game = new Game(services);
+        
         game.ShowWelcomeNotification();
+        
         GetGameParams(args, game, fieldPainter);
-        
-        
         await services.JoinToTheGame(game);
         
         while (!await services.IsGameStarted())
@@ -24,7 +24,6 @@ internal static class Program
              Console.WriteLine("Waiting for second player"); 
         }
 
-        
         //server should  control Is game End  
         while (!game.IsGameEnd)
         {

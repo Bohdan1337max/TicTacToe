@@ -23,7 +23,13 @@ public class Game
     public GameSigns[,] GameField = new GameSigns[3, 3];
     public GameSigns CurrentSign = GameSigns.X;
     public bool IsGameEnd;
-    private Services _services = new Services();
+    private readonly Services _services;
+
+    public Game(Services services)
+    {
+        _services = services;
+    }
+
     public GameSigns SignFromServer { get; set; }
 
     public async void MakeTurn(int numpadTurnInput)
@@ -60,9 +66,7 @@ public class Game
             return;
         }
         
-        CheckIsFieldComplete();
-        
-        
+        CheckIsFieldFull();
     }
 
     private void ChangeGameSign()
@@ -126,6 +130,7 @@ public class Game
         var sign = GameField[x, y];
         int winCombination = 0;
 
+        //Optimize mathod
         switch (y)
         {
             case 0:
@@ -259,7 +264,7 @@ public class Game
             winner == GameSigns.Empty ? "DRAW!! Game field is full" : $"Congratulations {winner} WIN!!!!!");
     }
 
-    private void CheckIsFieldComplete()
+    private void CheckIsFieldFull()
     {
         var emptySpaceCounter = 0;
         
