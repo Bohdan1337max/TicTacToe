@@ -27,7 +27,7 @@ public class TicTacToeController : ControllerBase
             GameState = new GameState
             {
                 GameField = new GameSigns[9],
-                TurnSign = ServerGame.CurrentTurnSign
+                //TurnSign = ServerGame.CurrentTurnSign
             }
         };
         var playerSign = ServerGame.Players.Count switch

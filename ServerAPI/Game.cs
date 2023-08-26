@@ -25,7 +25,6 @@ public class Game
             Console.WriteLine("now it's the other player's turn");
             return;
         }
-
         GameField[x, y] = CurrentSign;
         if (FindWinCombination(x, y))
         {
@@ -74,7 +73,7 @@ public class Game
         return new GameState()
         {
             GameField = gameField2D,
-            TurnSign = CurrentSign
+           // TurnSign = CurrentSign
         };
     }
 

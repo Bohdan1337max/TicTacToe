@@ -3,12 +3,12 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace ServerAP.Controllers;
 [ApiController]
-[Route("LongPolling")]
+[Route("GameController")]
 
 public class LongPollingController : ControllerBase
 {
     private static readonly PollingHandler Handler = new ();
-
+    
     [HttpGet("WaitForTurn")]
     public async Task<IActionResult> LongPoll()
     {
@@ -20,7 +20,7 @@ public class LongPollingController : ControllerBase
         return Ok(Handler.Consume());
     }
     
-    [HttpPost( "MakeTurn")]
+    /*[HttpPost( "MakeTurn")]
     public IActionResult SendGameState(GameState gameState)
     {
         if (gameState.TurnSign != ServerGame.CurrentTurnSign)
@@ -31,5 +31,6 @@ public class LongPollingController : ControllerBase
         gameState.TurnSign = ServerGame.CurrentTurnSign;
         
         return Ok(gameState);
-    }
+    }*/
+    
 }

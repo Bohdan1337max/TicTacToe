@@ -7,41 +7,51 @@ internal static class Program
 {
     static async Task Main(string[] args)
     {
-        var services = new Services();
-        
-        FieldPainter fieldPainter = new();
         InputHandler inputHandler = new InputHandler();
-        Game game = new Game(services);
+        FieldPainter fieldPainter = new();
+        var multiPlayerGame = StartMultiPlayerGame(inputHandler: inputHandler, fieldPainter);
+        GetGameParams(args, await multiPlayerGame, fieldPainter);
+    }
+
+    private static async Task<MultiPlayerGame> StartMultiPlayerGame(InputHandler inputHandler, FieldPainter fieldPainter)
+    {
+        var services = new Services();
+        MultiPlayerGame multiPlayerGame = new MultiPlayerGame(services);
         
-        game.ShowWelcomeNotification();
         
-        GetGameParams(args, game, fieldPainter);
-        await services.JoinToTheGame(game);
+        await services.JoinToTheGame(multiPlayerGame);
         
         while (!await services.IsGameStarted())
         {
-             await Task.Delay(2000);
-             Console.WriteLine("Waiting for second player"); 
+            await Task.Delay(2000);
+            Console.WriteLine("Waiting for second player"); 
         }
 
         //server should  control Is game End  
-        while (!game.IsGameEnd)
+        while (!multiPlayerGame.IsGameEnd)
         {
-            fieldPainter.PaintGameField(game.GameField, inputHandler.X, inputHandler.Y);
+            fieldPainter.PaintGameField(multiPlayerGame.GameField, inputHandler.X, inputHandler.Y);
             var key = Console.ReadKey(true);
             inputHandler.Handle(key);
 
             if (key.Key == ConsoleKey.Enter)
             {
-                await game.MakeTurn(inputHandler.X, inputHandler.Y);
+                await multiPlayerGame.MakeTurn(inputHandler.X, inputHandler.Y);
             }
-            fieldPainter.PaintGameField(game.GameField, inputHandler.X, inputHandler.Y);
+            fieldPainter.PaintGameField(multiPlayerGame.GameField, inputHandler.X, inputHandler.Y);
         }
 
-        game.ShowEndGameNotification(game.Winner);
+        multiPlayerGame.ShowEndGameNotification(multiPlayerGame.Winner);
+
+        return multiPlayerGame;
+    }
+
+    private static void StartSinglePlayerGame()
+    {
+        
     }
     
-    private static void GetGameParams(string[] args, Game game, FieldPainter fieldPainter)
+    private static void GetGameParams(string[] args, MultiPlayerGame multiPlayerGame, FieldPainter fieldPainter)
     {
         string colorX;
         string colorO;
@@ -50,12 +60,12 @@ internal static class Program
 
         if (args[0] == "O")
         {
-            game.CurrentSign = GameSigns.O;
+            multiPlayerGame.CurrentSign = GameSigns.O;
         }
 
         if (args[0] == "X")
         {
-            game.CurrentSign = GameSigns.X;
+            multiPlayerGame.CurrentSign = GameSigns.X;
            
         }
         

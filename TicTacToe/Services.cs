@@ -20,21 +20,22 @@ public class Services
         PropertyNameCaseInsensitive = true
     };
 
-    public async Task JoinToTheGame(Game game)
+    public async Task JoinToTheGame(MultiPlayerGame multiPlayerGame)
     {
         const string baseUrl = "http://localhost:5213/TicTacToe/AddPlayer";
         using var client = new HttpClient();
         var player = new Player();
         var content = JsonContent.Create(player);
         var response = await client.PostAsync(baseUrl, content);
-        string responseContent = await response.Content.ReadAsStringAsync();
+        var responseContent = await response.Content.ReadAsStringAsync();
         var startGameInfo = JsonSerializer.Deserialize<StartGameInfo>(responseContent, _options);
         
         if (startGameInfo != null)
         {
-            game.CurrentSign = startGameInfo.PlayerSign;
-            game.SignFromServer = startGameInfo.GameState.TurnSign;
-            game.GameField = ConvertTo2DArray(startGameInfo.GameState.GameField);
+            Console.WriteLine($"Welcome your player sign is {startGameInfo.PlayerSign}");
+            multiPlayerGame.CurrentSign = startGameInfo.PlayerSign;
+            //multiPlayerGame.SignFromServer = startGameInfo.GameState.TurnSign;
+            multiPlayerGame.GameField = ConvertTo2DArray(startGameInfo.GameState.GameField);
         }
     }
 
@@ -47,39 +48,39 @@ public class Services
         return responseContent == "true";
     }
 
-    public async Task ServerMakeTurn(Game game)
+    /*public async Task ServerMakeTurn(MultiPlayerGame multiPlayerGame)
     {
         try
         {
-            const string baseUrl = "http://localhost:5213/LongPolling/MakeTurn";
+            const string baseUrl = "http://localhost:5213/GameController/MakeTurn";
             using var client = new HttpClient();
-            var gameState = game.GameStateCollector();
+            var gameState = multiPlayerGame.GameStateCollector();
             var jsonContent = JsonSerializer.Serialize(gameState, options: _options);
             StringContent content = new StringContent(jsonContent, Encoding.UTF8, "application/json");
             var response = await client.PostAsync(baseUrl, content);
             var responseContentString = await response.Content.ReadAsStringAsync();
             var responseContent = JsonSerializer.Deserialize<GameState>(responseContentString, options: _options);
             if (responseContent != null) 
-                game.SignFromServer = responseContent.TurnSign;
+                multiPlayerGame.SignFromServer = responseContent.TurnSign;
         }
         catch (HttpRequestException ex)
         {
             Console.WriteLine("Request error: " + ex.Message);
         }
-    }
+    }*/
     
-    public async Task WaitForTurn(Game game)
+    public async Task WaitForTurn(MultiPlayerGame multiPlayerGame)
     {
         try
         {
-            const string baseUrl = "http://localhost:5213/LongPolling/WaitForTurn";
+            const string baseUrl = "http://localhost:5213/GameController/WaitForTurn";
             using var client = new HttpClient();
             client.Timeout = TimeSpan.FromMilliseconds(Timeout.Infinite);
             var response = await client.GetAsync(baseUrl);
             if (response.IsSuccessStatusCode)
             {
                 string responseContent = await response.Content.ReadAsStringAsync();
-                DeserializeGameStateFromJson(responseContent,game);
+                DeserializeGameStateFromJson(responseContent,multiPlayerGame);
             }
         }
         catch (HttpRequestException ex)
@@ -89,12 +90,11 @@ public class Services
     }
 
 
-    private void DeserializeGameStateFromJson(string responseContent, Game game )
+    private void DeserializeGameStateFromJson(string responseContent, MultiPlayerGame multiPlayerGame )
     {
         var gameState = JsonSerializer.Deserialize<GameState>(responseContent, options: _options);
         if (gameState == null) return;
-        game.SignFromServer = gameState.TurnSign;
-        game.GameField = ConvertTo2DArray(gameState.GameField);
+        multiPlayerGame.GameField = ConvertTo2DArray(gameState.GameField);
     }
 
 

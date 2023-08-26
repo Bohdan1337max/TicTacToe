@@ -10,7 +10,7 @@ public enum GameSigns
     X,
          
 }
-public class Game
+public class MultiPlayerGame
 {
     private readonly int[,] _field = new int[3, 3]
     { // 0  1  2
@@ -25,7 +25,7 @@ public class Game
     public bool IsGameEnd;
     private readonly Services _services;
 
-    public Game(Services services)
+    public MultiPlayerGame(Services services)
     {
         _services = services;
     }
@@ -58,7 +58,7 @@ public class Game
         }
         
         GameField[x, y] = CurrentSign;
-        await _services.ServerMakeTurn(this);
+       // await _services.ServerMakeTurn(this);
         if (FindWinCombination(x, y))
         {
             Winner = CurrentSign;
@@ -101,7 +101,7 @@ public class Game
         return false;
     }
 
-    public GameState GameStateCollector()
+    /*public GameState GameStateCollector()
     {
         GameSigns[] gameField2D = GameField.Cast<GameSigns>().ToArray();
         return new GameState()
@@ -109,7 +109,7 @@ public class Game
             GameField = gameField2D,
             TurnSign = CurrentSign
         };
-    }
+    }*/
     
     private bool FindWinCombination(int x, int y)
     {
