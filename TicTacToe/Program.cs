@@ -7,16 +7,17 @@ internal static class Program
 {
     static async Task Main(string[] args)
     {
-        InputHandler inputHandler = new InputHandler();
+        InputHandler inputHandler;
         FieldPainter fieldPainter = new();
-        var multiPlayerGame = StartMultiPlayerGame(inputHandler: inputHandler, fieldPainter);
+        var multiPlayerGame = StartMultiPlayerGame(fieldPainter);
         GetGameParams(args, await multiPlayerGame, fieldPainter);
     }
 
-    private static async Task<MultiPlayerGame> StartMultiPlayerGame(InputHandler inputHandler, FieldPainter fieldPainter)
+    private static async Task<MultiPlayerGame> StartMultiPlayerGame( FieldPainter fieldPainter)
     {
+        var inputHandler = new InputHandler();
         var services = new Services();
-        MultiPlayerGame multiPlayerGame = new MultiPlayerGame(services);
+        MultiPlayerGame multiPlayerGame = new MultiPlayerGame(services , inputHandler);
         
         
         await services.JoinToTheGame(multiPlayerGame);
@@ -27,7 +28,7 @@ internal static class Program
             Console.WriteLine("Waiting for second player"); 
         }
 
-        //server should  control Is game End  
+        //server should  control Is game End
         while (!multiPlayerGame.IsGameEnd)
         {
             fieldPainter.PaintGameField(multiPlayerGame.GameField, inputHandler.X, inputHandler.Y);

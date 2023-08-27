@@ -22,63 +22,35 @@ public class MultiPlayerGame
     public GameSigns Winner { get; set; }
     public GameSigns[,] GameField = new GameSigns[3, 3];
     public GameSigns CurrentSign = GameSigns.X;
+    public bool CanPlayerMakeTurn { get; set; }
     public bool IsGameEnd;
+    private readonly InputHandler _inputHandler;
     private readonly Services _services;
 
-    public MultiPlayerGame(Services services)
+    public MultiPlayerGame(Services services, InputHandler inputHandler)
     {
         _services = services;
+        _inputHandler = inputHandler;
     }
 
     public GameSigns SignFromServer { get; set; }
 
-    public async void MakeTurn(int numpadTurnInput)
-    {
-        for (int i = 0; i < 3; i++)
-        {
-            for (int j = 0; j < 3; j++)
-            {
-                if (_field[i, j] == numpadTurnInput)
-                {
-                    await MakeTurn(i,j);
-                }
-            }
-        }
-    }
-
+   
     public async Task MakeTurn(int x, int y)
     {
         if (GameField[x, y] != GameSigns.Empty)
             return;
+        
         if (!IsNowMyTurn())
         {
             Console.WriteLine("now it's the other player's turn");
             await _services.WaitForTurn( this);
             return;    
         }
+        // await _services.ServerMakeTurn(this);
         
-        GameField[x, y] = CurrentSign;
-       // await _services.ServerMakeTurn(this);
-        if (FindWinCombination(x, y))
-        {
-            Winner = CurrentSign;
-            IsGameEnd = true;
-            return;
-        }
-        
-        CheckIsFieldFull();
     }
-
-    private void ChangeGameSign()
-    {
-        CurrentSign = CurrentSign switch
-        {
-            GameSigns.X => GameSigns.O,
-            GameSigns.O => GameSigns.X,
-            _ => CurrentSign
-        };
-    }
-
+    
 
     private bool FindWinCombination(int numpadTurnInput)
     {
@@ -101,25 +73,16 @@ public class MultiPlayerGame
         return false;
     }
 
-    /*public GameState GameStateCollector()
+    public TurnInfo TurnInfoCollector()
     {
-        GameSigns[] gameField2D = GameField.Cast<GameSigns>().ToArray();
-        return new GameState()
+        return new TurnInfo()
         {
-            GameField = gameField2D,
-            TurnSign = CurrentSign
+            X = _inputHandler.X,
+            Y = _inputHandler.Y,
+            PlayerSign = CurrentSign
         };
-    }*/
-    
-    private bool FindWinCombination(int x, int y)
-    {
-        if (FindVerticalWinCombination(x, y) >= 2)
-            return true;
-        if (FindHorizontalWinCombination(x, y) >= 2)
-            return true;
-        return FindDiagonalWinCombination(x, y) >= 2;
     }
-
+    
     private bool IsNowMyTurn()
     {
         return CurrentSign == SignFromServer;

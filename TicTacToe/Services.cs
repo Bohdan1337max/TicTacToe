@@ -34,7 +34,7 @@ public class Services
         {
             Console.WriteLine($"Welcome your player sign is {startGameInfo.PlayerSign}");
             multiPlayerGame.CurrentSign = startGameInfo.PlayerSign;
-            //multiPlayerGame.SignFromServer = startGameInfo.GameState.TurnSign;
+            multiPlayerGame.CanPlayerMakeTurn = startGameInfo.GameState.CanPlayerMakeTurn;
             multiPlayerGame.GameField = ConvertTo2DArray(startGameInfo.GameState.GameField);
         }
     }
@@ -44,30 +44,37 @@ public class Services
         const string baseUrl = "http://localhost:5213/TicTacToe/IsGameReady";
         using var client = new HttpClient();
         var response = await client.GetAsync(baseUrl);
-        string responseContent = await response.Content.ReadAsStringAsync();
-        return responseContent == "true";
+        var responseContent = await response.Content.ReadAsStringAsync();
+        var isGameStarted = JsonSerializer.Deserialize<bool>(responseContent, options: _options);
+        return isGameStarted;
     }
 
-    /*public async Task ServerMakeTurn(MultiPlayerGame multiPlayerGame)
+    public async Task ServerMakeTurn(MultiPlayerGame multiPlayerGame)
     {
         try
         {
             const string baseUrl = "http://localhost:5213/GameController/MakeTurn";
             using var client = new HttpClient();
-            var gameState = multiPlayerGame.GameStateCollector();
-            var jsonContent = JsonSerializer.Serialize(gameState, options: _options);
+            var turnInfo = multiPlayerGame.TurnInfoCollector();
+            var jsonContent = JsonSerializer.Serialize(turnInfo, options: _options);
             StringContent content = new StringContent(jsonContent, Encoding.UTF8, "application/json");
             var response = await client.PostAsync(baseUrl, content);
             var responseContentString = await response.Content.ReadAsStringAsync();
-            var responseContent = JsonSerializer.Deserialize<GameState>(responseContentString, options: _options);
-            if (responseContent != null) 
-                multiPlayerGame.SignFromServer = responseContent.TurnSign;
+            var gameStateFromServer = JsonSerializer.Deserialize<GameState>(responseContentString, options: _options);
+            
+            if (gameStateFromServer != null)
+            {
+                multiPlayerGame.IsGameEnd = gameStateFromServer.IsGameEnd;
+                multiPlayerGame.GameField = ConvertTo2DArray(gameStateFromServer.GameField);
+                multiPlayerGame.CanPlayerMakeTurn = gameStateFromServer.CanPlayerMakeTurn;
+                multiPlayerGame.Winner = gameStateFromServer.Winner;
+            }
         }
         catch (HttpRequestException ex)
         {
             Console.WriteLine("Request error: " + ex.Message);
         }
-    }*/
+    }
     
     public async Task WaitForTurn(MultiPlayerGame multiPlayerGame)
     {
