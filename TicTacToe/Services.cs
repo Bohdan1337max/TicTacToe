@@ -64,6 +64,7 @@ public class Services
             
             if (gameStateFromServer != null)
             {
+                //make separate method or constructor but how field painter??!
                 multiPlayerGame.IsGameEnd = gameStateFromServer.IsGameEnd;
                 multiPlayerGame.GameField = ConvertTo2DArray(gameStateFromServer.GameField);
                 multiPlayerGame.CanPlayerMakeTurn = gameStateFromServer.CanPlayerMakeTurn;
@@ -86,7 +87,7 @@ public class Services
             var response = await client.GetAsync(baseUrl);
             if (response.IsSuccessStatusCode)
             {
-                string responseContent = await response.Content.ReadAsStringAsync();
+                var responseContent = await response.Content.ReadAsStringAsync();
                 DeserializeGameStateFromJson(responseContent,multiPlayerGame);
             }
         }

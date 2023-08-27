@@ -7,10 +7,10 @@ public class PollingHandler
 {
     public bool Notified { get; private set; }
     
-    public void Notify(GameState gameState)
+    public void Notify(TurnInfo turnInfo)
     {
         Notified = true;
-        ServerGame.GameState = gameState;
+        ServerGame.TurnInfo = turnInfo;
        
     }
     public GameState Consume()

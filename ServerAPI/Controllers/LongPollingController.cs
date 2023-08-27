@@ -20,17 +20,17 @@ public class LongPollingController : ControllerBase
         return Ok(Handler.Consume());
     }
     
-    /*[HttpPost( "MakeTurn")]
-    public IActionResult SendGameState(GameState gameState)
+    [HttpPost( "MakeTurn")]
+    public IActionResult SendGameState(TurnInfo turnInfo)
     {
-        if (gameState.TurnSign != ServerGame.CurrentTurnSign)
+        if (turnInfo.PlayerSign != ServerGame.CurrentTurnSign)
             return BadRequest("now it's the other player's turn");
         
-        ServerGame.CurrentTurnSign = gameState.TurnSign == GameSigns.X ? GameSigns.O : GameSigns.X;
-        Handler.Notify(gameState);
-        gameState.TurnSign = ServerGame.CurrentTurnSign;
+        ServerGame.CurrentTurnSign = turnInfo.PlayerSign == GameSigns.X ? GameSigns.O : GameSigns.X;
+        Handler.Notify(turnInfo);
+        turnInfo.PlayerSign = ServerGame.CurrentTurnSign;
         
-        return Ok(gameState);
-    }*/
+        return Ok(turnInfo);
+    }
     
 }

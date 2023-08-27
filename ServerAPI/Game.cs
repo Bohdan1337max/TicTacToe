@@ -66,17 +66,7 @@ public class Game
 
         return false;
     }
-
-    public GameState GameStateCollector()
-    {
-        GameSigns[] gameField2D = GameField.Cast<GameSigns>().ToArray();
-        return new GameState()
-        {
-            GameField = gameField2D,
-           // TurnSign = CurrentSign
-        };
-    }
-
+    
     private bool FindWinCombination(int x, int y)
     {
         if (FindVerticalWinCombination(x, y) >= 2)
