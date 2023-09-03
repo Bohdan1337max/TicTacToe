@@ -64,7 +64,7 @@ public class Services
             
             if (gameStateFromServer != null)
             {
-                //make separate method or constructor but how field painter??!
+                //make separate method or constructor but how field painter in actual gameStateFromServer??!
                 multiPlayerGame.IsGameEnd = gameStateFromServer.IsGameEnd;
                 multiPlayerGame.GameField = ConvertTo2DArray(gameStateFromServer.GameField);
                 multiPlayerGame.CanPlayerMakeTurn = gameStateFromServer.CanPlayerMakeTurn;
@@ -102,7 +102,11 @@ public class Services
     {
         var gameState = JsonSerializer.Deserialize<GameState>(responseContent, options: _options);
         if (gameState == null) return;
+        
         multiPlayerGame.GameField = ConvertTo2DArray(gameState.GameField);
+        multiPlayerGame.Winner = gameState.Winner;
+        multiPlayerGame.IsGameEnd = gameState.IsGameEnd;
+        multiPlayerGame.CanPlayerMakeTurn = gameState.CanPlayerMakeTurn;
     }
 
 

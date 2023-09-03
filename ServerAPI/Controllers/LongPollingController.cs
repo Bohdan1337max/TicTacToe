@@ -23,12 +23,12 @@ public class LongPollingController : ControllerBase
     [HttpPost( "MakeTurn")]
     public IActionResult SendGameState(TurnInfo turnInfo)
     {
-        if (turnInfo.PlayerSign != ServerGame.CurrentTurnSign)
+        if (turnInfo.PlayerSign != Game.CurrentSign)
             return BadRequest("now it's the other player's turn");
         
-        ServerGame.CurrentTurnSign = turnInfo.PlayerSign == GameSigns.X ? GameSigns.O : GameSigns.X;
+        Game.CurrentSign = turnInfo.PlayerSign == GameSigns.X ? GameSigns.O : GameSigns.X;
         Handler.Notify(turnInfo);
-        turnInfo.PlayerSign = ServerGame.CurrentTurnSign;
+        turnInfo.PlayerSign = Game.CurrentSign;
         
         return Ok(turnInfo);
     }

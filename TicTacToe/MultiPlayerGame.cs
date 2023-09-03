@@ -41,13 +41,13 @@ public class MultiPlayerGame
         if (GameField[x, y] != GameSigns.Empty)
             return;
         
-        if (!IsNowMyTurn())
+        if (!CanPlayerMakeTurn)
         {
             Console.WriteLine("now it's the other player's turn");
             await _services.WaitForTurn( this);
-            return;    
         }
-        // await _services.ServerMakeTurn(this);
+        
+        await _services.ServerMakeTurn(this);
         
     }
     

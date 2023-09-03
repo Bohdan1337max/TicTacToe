@@ -10,12 +10,12 @@ public class PollingHandler
     public void Notify(TurnInfo turnInfo)
     {
         Notified = true;
-        ServerGame.TurnInfo = turnInfo;
+        Game.TurnInfo = turnInfo;
        
     }
     public GameState Consume()
     {
         Notified = false;
-        return ServerGame.GameState;
+        return Game.GameState;
     }
 }

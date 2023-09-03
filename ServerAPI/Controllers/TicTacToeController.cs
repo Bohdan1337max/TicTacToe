@@ -6,16 +6,25 @@ namespace ServerAP.Controllers;
 [Route("TicTacToe")]
 public class TicTacToeController : ControllerBase
 {
+    private Game _game;
+    
+    //Where i can put game into the constructor?
+    public TicTacToeController(GameDispenser game)
+    {
+        _game = game.DispenseGame();
+
+    }
+    
     [HttpGet]
     public IActionResult GetGameState()
     {
-        return Ok(ServerGame.GameState);
+        return Ok(_game.GameState);
     }
 
     [HttpPost("PostGS")]
     public IActionResult PostGameState(GameState gameState)
     {
-        ServerGame.GameState = gameState;
+        Game.GameState = gameState;
         return Ok(gameState);
     }
 
@@ -30,7 +39,7 @@ public class TicTacToeController : ControllerBase
                 //TurnSign = ServerGame.CurrentTurnSign
             }
         };
-        var playerSign = ServerGame.Players.Count switch
+        var playerSign = Game.Players.Count switch
         {
             0 => GameSigns.X,
             1 => GameSigns.O,
@@ -41,19 +50,19 @@ public class TicTacToeController : ControllerBase
         player.Id = (int) playerSign;
         player.Sign = playerSign;
         startGameInfo.PlayerSign = player.Sign;
-        ServerGame.Players.Add(player);
+        Game.Players.Add(player);
         return Ok(startGameInfo);
     }
 
     [HttpGet("PlayersGet")]
     public IActionResult GetPlayers()
     {
-        return Ok(ServerGame.Players);
+        return Ok(Game.Players);
     }
 
     [HttpGet("IsGameReady")]
     public IActionResult IsGameReady()
     {
-        return Ok(ServerGame.Players.Count == 2);
+        return Ok(Game.Players.Count == 2);
     }
 }
