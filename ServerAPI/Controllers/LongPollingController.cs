@@ -7,30 +7,42 @@ namespace ServerAP.Controllers;
 
 public class LongPollingController : ControllerBase
 {
-    private static readonly PollingHandler Handler = new ();
+    private Game _game;
+    private PollingHandler _handler;
+    
+    public LongPollingController(GameDispenser game)
+    {
+        _game = game.DispenseGame();
+        _handler = new PollingHandler(_game);
+    }
     
     [HttpGet("WaitForTurn")]
-    public async Task<IActionResult> LongPoll()
+    public async Task<IActionResult> WaitingForTurn()
     {
         
-        while (!Handler.Notified)
+        while (!_handler.Notified)
         {
             await Task.Delay(1000);
         }
-        return Ok(Handler.Consume());
+        return Ok(_handler.Consume());
     }
     
     [HttpPost( "MakeTurn")]
-    public IActionResult SendGameState(TurnInfo turnInfo)
+    public IActionResult MakeTurn(TurnInfo turnInfo)
     {
-        if (turnInfo.PlayerSign != ServerGame.CurrentTurnSign)
-            return BadRequest("now it's the other player's turn");
+        if (!_game.IfCanPlayerMakeTurn())
+        {
+            _game.CanPlayerMakeTurn = false;
+            return BadRequest("Now it's the other player's turn");
+        }
+//Make turb from game!
+         _game.MakeTurn(turnInfo.X,turnInfo.Y);
+        _game.ChangeGameSign();
+        _handler.Notify(turnInfo);
         
-        ServerGame.CurrentTurnSign = turnInfo.PlayerSign == GameSigns.X ? GameSigns.O : GameSigns.X;
-        Handler.Notify(turnInfo);
-        turnInfo.PlayerSign = ServerGame.CurrentTurnSign;
+        turnInfo.PlayerSign = _game.CurrentSign;
         
-        return Ok(turnInfo);
+        return Ok(_game.GameState);
     }
     
 }

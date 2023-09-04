@@ -9,22 +9,29 @@ public class Game
         {4, 5, 6}, //1
         {1, 2, 3} //2
     };
-
+    
+    
+    //Operate on GameState or Game fields?
+    public static List<Player> Players = new();
+    public TurnInfo TurnInfo { get; set; } = null!;
+    public GameState GameState { get; set; }
     public GameSigns Winner { get; set; }
     public GameSigns[,] GameField = new GameSigns[3, 3];
     public GameSigns CurrentSign = GameSigns.X;
-    public bool IsGameEnd;
-    public GameSigns SignFromServer { get; set; }
-
+    public bool IsGameEnd { get; set; }
+    public bool CanPlayerMakeTurn { get; set; }
+    
+    
     public async Task MakeTurn(int x, int y)
     {
         if (GameField[x, y] != GameSigns.Empty)
-            return;
-        if (!IsNowMyTurn())
         {
-            Console.WriteLine("now it's the other player's turn");
-            return;
+            //handle this!
+            Console.WriteLine("Cell already used.Choose another one!");
+            CanPlayerMakeTurn = false;
+            return ; 
         }
+        
         GameField[x, y] = CurrentSign;
         if (FindWinCombination(x, y))
         {
@@ -32,39 +39,17 @@ public class Game
             IsGameEnd = true;
             return;
         }
-
         CheckIsFieldFull();
     }
 
-    private void ChangeGameSign()
+    public void ChangeGameSign()
     {
-        CurrentSign = CurrentSign switch
-        {
-            GameSigns.X => GameSigns.O,
-            GameSigns.O => GameSigns.X,
-            _ => CurrentSign
-        };
+        CurrentSign = TurnInfo.PlayerSign == GameSigns.X ? GameSigns.O : GameSigns.X;
     }
 
-    private bool FindWinCombination(int numpadTurnInput)
+    public bool IfCanPlayerMakeTurn()
     {
-        for (int i = 0; i < 3; i++)
-        {
-            for (int j = 0; j < 3; j++)
-            {
-                if (numpadTurnInput == _field[i, j])
-                {
-                    if (FindVerticalWinCombination(i, j) >= 2)
-                        return true;
-                    if (FindHorizontalWinCombination(i, j) >= 2)
-                        return true;
-                    if (FindDiagonalWinCombination(i, j) >= 2)
-                        return true;
-                }
-            }
-        }
-
-        return false;
+        return TurnInfo.PlayerSign == CurrentSign;
     }
     
     private bool FindWinCombination(int x, int y)
@@ -75,12 +60,19 @@ public class Game
             return true;
         return FindDiagonalWinCombination(x, y) >= 2;
     }
+    
 
-    private bool IsNowMyTurn()
+    public void GameStateCollector()
     {
-        return CurrentSign == SignFromServer;
+         GameState = new GameState()
+        {
+            GameField = GameField.Cast<GameSigns>().ToArray(),
+            Winner = Winner,
+            IsGameEnd = IsGameEnd,
+            CanPlayerMakeTurn = CanPlayerMakeTurn
+            
+        };
     }
-
     private int FindVerticalWinCombination(int x, int y)
     {
         var sign = GameField[x, y];

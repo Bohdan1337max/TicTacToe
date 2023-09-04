@@ -6,16 +6,21 @@ namespace ServerAP;
 public class PollingHandler
 {
     public bool Notified { get; private set; }
-    
+    private Game _game;
+
+    public PollingHandler(Game game)
+    {
+        _game = game;
+    }
     public void Notify(TurnInfo turnInfo)
     {
         Notified = true;
-        ServerGame.TurnInfo = turnInfo;
+        _game.TurnInfo = turnInfo;
        
     }
     public GameState Consume()
     {
         Notified = false;
-        return ServerGame.GameState;
+        return _game.GameState;
     }
 }
