@@ -5,12 +5,12 @@ namespace ServerAP.Controllers;
 [ApiController]
 [Route("GameController")]
 
-public class LongPollingController : ControllerBase
+public class GameController : ControllerBase
 {
     private PollingHandler _handler;
     private Game _game;
 
-    public LongPollingController(GameDispenser gameDispenser)
+    public GameController(GameDispenser gameDispenser)
     {
         _game = gameDispenser.DispenseGame();
         _handler = new PollingHandler( _game);
