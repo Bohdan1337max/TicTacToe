@@ -7,17 +7,17 @@ namespace ServerAP.Controllers;
 
 public class LongPollingController : ControllerBase
 {
-    private Game _game;
     private PollingHandler _handler;
-    
-    public LongPollingController(GameDispenser game)
+    private Game _game;
+
+    public LongPollingController(GameDispenser gameDispenser)
     {
-        _game = game.DispenseGame();
-        _handler = new PollingHandler(_game);
+        _game = gameDispenser.DispenseGame();
+        _handler = new PollingHandler( _game);
     }
     
     [HttpGet("WaitForTurn")]
-    public async Task<IActionResult> WaitingForTurn()
+    public async Task<IActionResult> LongPoll()
     {
         
         while (!_handler.Notified)
@@ -28,21 +28,17 @@ public class LongPollingController : ControllerBase
     }
     
     [HttpPost( "MakeTurn")]
-    public IActionResult MakeTurn(TurnInfo turnInfo)
+    public IActionResult SendGameState(TurnInfo turnInfo)
     {
-        if (!_game.IfCanPlayerMakeTurn())
+        if (_game.IfCanPlayerMakeTurn())
         {
             _game.CanPlayerMakeTurn = false;
-            return BadRequest("Now it's the other player's turn");
+            return BadRequest("now it's the other player's turn");
         }
-//Make turb from game!
-         _game.MakeTurn(turnInfo.X,turnInfo.Y);
         _game.ChangeGameSign();
         _handler.Notify(turnInfo);
         
-        turnInfo.PlayerSign = _game.CurrentSign;
-        
-        return Ok(_game.GameState);
+        return Ok(turnInfo);
     }
     
 }
