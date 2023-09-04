@@ -17,7 +17,7 @@ public class LongPollingController : ControllerBase
     }
     
     [HttpGet("WaitForTurn")]
-    public async Task<IActionResult> LongPoll()
+    public async Task<IActionResult> WaitForTurn()
     {
         
         while (!_handler.Notified)
@@ -28,7 +28,7 @@ public class LongPollingController : ControllerBase
     }
     
     [HttpPost( "MakeTurn")]
-    public IActionResult SendGameState(TurnInfo turnInfo)
+    public IActionResult MakeTurn(TurnInfo turnInfo)
     {
         if (_game.IfCanPlayerMakeTurn())
         {
@@ -38,7 +38,7 @@ public class LongPollingController : ControllerBase
         _game.ChangeGameSign();
         _handler.Notify(turnInfo);
         
-        return Ok(turnInfo);
+        return Ok(_game.GameState);
     }
     
 }
