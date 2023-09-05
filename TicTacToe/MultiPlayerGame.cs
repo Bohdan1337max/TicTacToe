@@ -12,12 +12,6 @@ public enum GameSigns
 }
 public class MultiPlayerGame
 {
-    private readonly int[,] _field = new int[3, 3]
-    { // 0  1  2
-        {7, 8, 9}, //0
-        {4, 5, 6}, //1
-        {1, 2, 3}  //2
-    };
 
     public GameSigns Winner { get; set; }
     public GameSigns[,] GameField = new GameSigns[3, 3];
@@ -45,6 +39,7 @@ public class MultiPlayerGame
         {
             Console.WriteLine("now it's the other player's turn");
             await _services.WaitForTurn( this);
+            return;
         }
         
         await _services.ServerMakeTurn(this);

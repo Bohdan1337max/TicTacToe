@@ -108,6 +108,7 @@ namespace TicTacToe;
          IndicateHorizontalLines();
          IndicateVerticalLines();
          HandlePointer(x,y);
+         FillEmptySpace();
          AddSignOnField(gameField);
      }
 
@@ -169,15 +170,27 @@ namespace TicTacToe;
          for (int i = 0; i < FieldWidth; i++)
          {
              Field[i, 0].Char = '#';
-
+             
              Field[i, 1 + _cellHeight].Char = '#';
-
+             
              Field[i, 2 + 2 * _cellHeight].Char = '#';
-
+            
              Field[i, 3 + 3 * _cellHeight].Char = '#';
          }
      }
 
+     private void FillEmptySpace()
+     {
+         for (int i = 0; i < FieldHeight ; i++)
+         {
+             for (int j = 0; j < FieldWidth; j++)
+             {
+                 if (Field[j, i].Char != '#')
+                     Field[j, i].Char = ' ';
+             }
+         }
+     }
+     
      private Pixel[,] InsertSign(Pixel[,] field, int[,] signPictureArray,int x,int y)
      {
          int iteratorX = 0;

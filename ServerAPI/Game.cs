@@ -11,7 +11,6 @@ public class Game
     };
     
     
-    //Operate on GameState or Game fields?
     public static List<Player> Players = new();
     public TurnInfo TurnInfo { get; set; } = null!;
     public GameState GameState { get; set; }
@@ -48,7 +47,12 @@ public class Game
 
     public bool IfCanPlayerMakeTurn()
     {
-        return TurnInfo.PlayerSign == CurrentSign;
+        if (TurnInfo.PlayerSign != CurrentSign)
+        {
+            CanPlayerMakeTurn = false;
+        }
+        CanPlayerMakeTurn = true;
+        return CanPlayerMakeTurn;
     }
     
     private bool FindWinCombination(int x, int y)

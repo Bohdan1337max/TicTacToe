@@ -8,9 +8,10 @@ public class PollingHandler
     public bool Notified { get; private set; }
     private Game _game;
 
-    public PollingHandler(Game game)
+    public PollingHandler(GameDispenser gameDispenser)
     {
-        _game = game;
+        _game = gameDispenser.DispenseGame();
+
     }
     public void Notify(TurnInfo turnInfo)
     {

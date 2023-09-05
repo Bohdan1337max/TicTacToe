@@ -9,7 +9,11 @@
 
     <ItemGroup>
         <PackageReference Include="Microsoft.AspNetCore.OpenApi" Version="7.0.5" />
+        <PackageReference Include="Microsoft.AspNetCore.WebUtilities" Version="2.1.1" />
         <PackageReference Include="Swashbuckle.AspNetCore" Version="6.4.0" />
+        <PackageReference Include="System.Collections.NonGeneric" Version="4.3.0" />
+        <PackageReference Include="System.Net.WebSockets" Version="4.3.0" />
+        <PackageReference Include="System.Text.RegularExpressions" Version="4.3.1" />
     </ItemGroup>
 
 </Project>

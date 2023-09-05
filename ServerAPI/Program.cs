@@ -11,6 +11,7 @@ builder.Services.AddControllers().AddJsonOptions(options => options.JsonSerializ
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 builder.Services.AddSingleton<GameDispenser>();
+builder.Services.AddSingleton<PollingHandler>();
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.

@@ -12,8 +12,7 @@ namespace TicTacToe;
 
 public class Services
 {
-    //add http claint in construcktor
-    
+    //add http client in constructor
     private readonly JsonSerializerOptions _options = new JsonSerializerOptions
     {
         Converters = {new JsonStringEnumConverter()},

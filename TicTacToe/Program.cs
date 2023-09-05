@@ -9,11 +9,10 @@ internal static class Program
     {
         InputHandler inputHandler = new InputHandler();
         FieldPainter fieldPainter = new();
-        var multiPlayerGame = StartMultiPlayerGame(fieldPainter, inputHandler);
-        GetGameParams(args, await multiPlayerGame, fieldPainter);
+        await StartMultiPlayerGame(fieldPainter, inputHandler);
     }
 
-    private static async Task<MultiPlayerGame> StartMultiPlayerGame( FieldPainter fieldPainter,InputHandler inputHandler)
+    private static async Task StartMultiPlayerGame( FieldPainter fieldPainter,InputHandler inputHandler)
     {
         var services = new Services();
         MultiPlayerGame multiPlayerGame = new MultiPlayerGame(services , inputHandler);
@@ -40,8 +39,7 @@ internal static class Program
         }
 
         multiPlayerGame.ShowEndGameNotification(multiPlayerGame.Winner);
-
-        return multiPlayerGame;
+        
     }
 
     private static void StartSinglePlayerGame()

@@ -2,11 +2,11 @@ namespace ServerAP;
 
 public class GameDispenser
 {
+    private readonly Game _game = new ();
+    
     public Game DispenseGame()
     {
-        
-        return new Game();
-        
+        return _game;
     }
     
 }

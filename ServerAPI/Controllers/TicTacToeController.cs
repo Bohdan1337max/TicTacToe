@@ -8,11 +8,9 @@ public class TicTacToeController : ControllerBase
 {
     private Game _game;
     
-    //Where i can put game into the constructor?
     public TicTacToeController(GameDispenser game)
     {
         _game = game.DispenseGame();
-
     }
     
     [HttpGet]
@@ -36,7 +34,6 @@ public class TicTacToeController : ControllerBase
             GameState = new GameState
             {
                 GameField = new GameSigns[9],
-                //TurnSign = ServerGame.CurrentTurnSign
             }
         };
         var playerSign = Game.Players.Count switch
@@ -51,6 +48,8 @@ public class TicTacToeController : ControllerBase
         player.Sign = playerSign;
         startGameInfo.PlayerSign = player.Sign;
         Game.Players.Add(player);
+        if (player.Sign == _game.CurrentSign)
+            startGameInfo.GameState.CanPlayerMakeTurn = true;
         return Ok(startGameInfo);
     }
 
