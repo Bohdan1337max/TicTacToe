@@ -28,15 +28,19 @@ public class GameController : ControllerBase
     }
     
     [HttpPost( "MakeTurn")]
-    public IActionResult MakeTurn(TurnInfo turnInfo)
+    public  IActionResult MakeTurn(TurnInfo turnInfo)
     {
-        if (_game.IfCanPlayerMakeTurn())
+        _handler.Notify(turnInfo);
+        if (!_game.IfCanPlayerMakeTurn())
         {
             _game.CanPlayerMakeTurn = false;
             return BadRequest("now it's the other player's turn");
         }
+        _game.MakeTurn();
         _game.ChangeGameSign();
-        _handler.Notify(turnInfo);
+        
+        
+        _game.GameStateCollector();
         
         return Ok(_game.GameState);
     }

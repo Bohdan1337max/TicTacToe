@@ -22,18 +22,17 @@ public class Game
     public bool CanPlayerMakeTurn { get; set; }
     
     
-    public async Task MakeTurn(int x, int y)
+    public void MakeTurn()
     {
-        if (GameField[x, y] != GameSigns.Empty)
+        if (GameField[TurnInfo.X, TurnInfo.Y] != GameSigns.Empty)
         {
             //handle this!
             Console.WriteLine("Cell already used.Choose another one!");
             CanPlayerMakeTurn = false;
-            return ; 
+            return; 
         }
-        
-        GameField[x, y] = CurrentSign;
-        if (FindWinCombination(x, y))
+        GameField[TurnInfo.X, TurnInfo.Y] = CurrentSign;
+        if (FindWinCombination(TurnInfo.X, TurnInfo.Y))
         {
             Winner = CurrentSign;
             IsGameEnd = true;

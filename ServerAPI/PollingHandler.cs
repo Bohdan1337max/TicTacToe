@@ -16,7 +16,6 @@ public class PollingHandler
     {
         Notified = true;
         _game.TurnInfo = turnInfo;
-       
     }
     public GameState Consume()
     {
