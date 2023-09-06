@@ -35,15 +35,7 @@ public class MultiPlayerGame
         if (GameField[x, y] != GameSigns.Empty)
             return;
         
-        if (!CanPlayerMakeTurn)
-        {
-            Console.WriteLine("now it's the other player's turn");
-            await _services.WaitForTurn( this);
-            return;
-        }
-        
         await _services.ServerMakeTurn(this);
-        
     }
     
     
@@ -57,9 +49,13 @@ public class MultiPlayerGame
         };
     }
     
-    private bool IsNowMyTurn()
+    public async Task CheckCurrentTurn()
     {
-        return CurrentSign == SignFromServer;
+        if (!CanPlayerMakeTurn)
+        {
+            Console.WriteLine("now it's the other player's turn");
+            await _services.WaitForTurn( this);
+        }
     }
     
 

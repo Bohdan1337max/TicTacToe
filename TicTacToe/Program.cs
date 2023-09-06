@@ -28,6 +28,9 @@ internal static class Program
         while (!multiPlayerGame.IsGameEnd)
         {
             fieldPainter.PaintGameField(multiPlayerGame.GameField, inputHandler.X, inputHandler.Y);
+            
+            await multiPlayerGame.CheckCurrentTurn();
+            
             var key = Console.ReadKey(true);
             inputHandler.Handle(key);
 

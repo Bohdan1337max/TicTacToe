@@ -45,15 +45,29 @@ public class Game
         CurrentSign = TurnInfo.PlayerSign == GameSigns.X ? GameSigns.O : GameSigns.X;
     }
 
-    public bool IfCanPlayerMakeTurn()
+    public (bool isTurnValid,string errorMessage) ValidateTurn()
     {
+        var errorMessage = "";
+        var isTurnValid = true;
+        
         if (TurnInfo.PlayerSign != CurrentSign)
         {
-            CanPlayerMakeTurn = false;
+            errorMessage = "Now it's the other player's turn";
+            isTurnValid = false;
+            return (isTurnValid,errorMessage);
         }
-        CanPlayerMakeTurn = true;
-        return CanPlayerMakeTurn;
+
+        if (GameField[TurnInfo.X, TurnInfo.Y] != GameSigns.Empty)
+        {
+            errorMessage = "Cell is full";
+            isTurnValid = false;
+        }
+
+        return (isTurnValid, errorMessage);
     }
+    
+    
+    
     
     private bool FindWinCombination(int x, int y)
     {
@@ -65,7 +79,7 @@ public class Game
     }
     
 
-    public void GameStateCollector()
+    public void GameStateCollect()
     {
          GameState = new GameState()
         {

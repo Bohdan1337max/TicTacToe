@@ -33,17 +33,18 @@ public class GameController : ControllerBase
     [HttpPost( "MakeTurn")]
     public  IActionResult MakeTurn(TurnInfo turnInfo)
     {
+        
         _game.TurnInfo = turnInfo;
         
-        if (!_game.IfCanPlayerMakeTurn())
+        var turnValidator = _game.ValidateTurn();
+        if (!turnValidator.isTurnValid)
         {
-            _game.CanPlayerMakeTurn = false;
-            return BadRequest("now it's the other player's turn");
+            return BadRequest(turnValidator.errorMessage);
         }
         
         _game.MakeTurn();
         _game.ChangeGameSign();
-        _game.GameStateCollector();
+        _game.GameStateCollect();
         
         _handler.Notify(turnInfo);
         
