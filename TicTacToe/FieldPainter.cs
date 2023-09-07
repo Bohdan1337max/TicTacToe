@@ -170,11 +170,11 @@ namespace TicTacToe;
          for (int i = 0; i < FieldWidth; i++)
          {
              Field[i, 0].Char = '#';
-             
+
              Field[i, 1 + _cellHeight].Char = '#';
-             
+
              Field[i, 2 + 2 * _cellHeight].Char = '#';
-            
+
              Field[i, 3 + 3 * _cellHeight].Char = '#';
          }
      }

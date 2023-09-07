@@ -19,17 +19,14 @@ public class GameController : ControllerBase
     [HttpGet("WaitForTurn")]
     public async Task<IActionResult> WaitForTurn()
     {
-        
         while (!_handler.Notified)
         {
             await Task.Delay(1000);
         }
         
-        
         return Ok(_handler.Consume());
     }
     
-    //Make Normal Turn Flow
     [HttpPost( "MakeTurn")]
     public  IActionResult MakeTurn(TurnInfo turnInfo)
     {
@@ -41,14 +38,24 @@ public class GameController : ControllerBase
         {
             return BadRequest(turnValidator.errorMessage);
         }
-        
         _game.MakeTurn();
+        
         _game.ChangeGameSign();
-        _game.GameStateCollect();
+
+        _game.CanPlayerMakeTurn = true;
         
-        _handler.Notify(turnInfo);
+        var gameState = _game.GameStateCollect();
         
-        return Ok(_game.GameState);
+        _handler.Notify(gameState);
+
+        while (_handler.Notified)
+        {
+            _game.CanPlayerMakeTurn = false;
+        }
+        
+        gameState = _game.GameStateCollect();
+        
+        return Ok(gameState);
     }
     
 }

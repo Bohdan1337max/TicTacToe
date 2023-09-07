@@ -23,13 +23,7 @@ public class Game
     
     public void MakeTurn()
     {
-        if (GameField[TurnInfo.X, TurnInfo.Y] != GameSigns.Empty)
-        {
-            //handle this!
-            Console.WriteLine("Cell already used.Choose another one!");
-            CanPlayerMakeTurn = false;
-            return; 
-        }
+        
         GameField[TurnInfo.X, TurnInfo.Y] = CurrentSign;
         if (FindWinCombination(TurnInfo.X, TurnInfo.Y))
         {
@@ -79,9 +73,9 @@ public class Game
     }
     
 
-    public void GameStateCollect()
+    public GameState GameStateCollect()
     {
-         GameState = new GameState()
+        GameState = new GameState()
         {
             GameField = GameField.Cast<GameSigns>().ToArray(),
             Winner = Winner,
@@ -89,6 +83,8 @@ public class Game
             CanPlayerMakeTurn = CanPlayerMakeTurn
             
         };
+        //?
+        return GameState;
     }
     private int FindVerticalWinCombination(int x, int y)
     {

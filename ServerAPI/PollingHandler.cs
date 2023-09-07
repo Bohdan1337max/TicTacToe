@@ -13,10 +13,10 @@ public class PollingHandler
         _game = gameDispenser.DispenseGame();
 
     }
-    public void Notify(TurnInfo turnInfo)
+    public void Notify(GameState gameState)
     {
         Notified = true;
-        _game.TurnInfo = turnInfo;
+        _game.GameState = gameState;
     }
     public GameState Consume()
     {
