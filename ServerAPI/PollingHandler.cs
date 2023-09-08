@@ -6,7 +6,7 @@ namespace ServerAP;
 public class PollingHandler
 {
     public bool Notified { get; private set; }
-    private Game _game;
+    private readonly Game _game;
 
     public PollingHandler(GameDispenser gameDispenser)
     {

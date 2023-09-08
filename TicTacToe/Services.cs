@@ -12,12 +12,20 @@ namespace TicTacToe;
 
 public class Services
 {
+
+    private HttpClient _client; 
     //add http client in constructor
-    private readonly JsonSerializerOptions _options = new JsonSerializerOptions
+    private readonly JsonSerializerOptions _options = new()
     {
         Converters = {new JsonStringEnumConverter()},
         PropertyNameCaseInsensitive = true
     };
+
+    public Services()
+    {
+        _client = new HttpClient();
+        
+    }
 
     public async Task JoinToTheGame(MultiPlayerGame multiPlayerGame)
     {
@@ -56,7 +64,7 @@ public class Services
             using var client = new HttpClient();
             var turnInfo = multiPlayerGame.TurnInfoCollector();
             var jsonContent = JsonSerializer.Serialize(turnInfo, options: _options);
-            StringContent content = new StringContent(jsonContent, Encoding.UTF8, "application/json");
+            var content = new StringContent(jsonContent, Encoding.UTF8, "application/json");
             var response = await client.PostAsync(baseUrl, content);
             var responseContentString = await response.Content.ReadAsStringAsync();
             var gameStateFromServer = JsonSerializer.Deserialize<GameState>(responseContentString, options: _options);

@@ -31,6 +31,8 @@ internal static class Program
             
             await multiPlayerGame.CheckCurrentTurn();
             
+            fieldPainter.PaintGameField(multiPlayerGame.GameField, inputHandler.X, inputHandler.Y);
+            
             var key = Console.ReadKey(true);
             inputHandler.Handle(key);
 

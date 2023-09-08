@@ -53,7 +53,7 @@ public class MultiPlayerGame
     {
         if (!CanPlayerMakeTurn)
         {
-            Console.WriteLine("now it's the other player's turn");
+            Console.WriteLine("Waiting for other player turn");
             await _services.WaitForTurn( this);
         }
     }
