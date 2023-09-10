@@ -13,8 +13,8 @@ namespace TicTacToe;
 public class Services
 {
 
-    private HttpClient _client; 
-    //add http client in constructor
+    private readonly HttpClient _client;
+    
     private readonly JsonSerializerOptions _options = new()
     {
         Converters = {new JsonStringEnumConverter()},
@@ -24,16 +24,14 @@ public class Services
     public Services()
     {
         _client = new HttpClient();
-        
+        _client.BaseAddress = new Uri("http://localhost:5213/");
     }
 
     public async Task JoinToTheGame(MultiPlayerGame multiPlayerGame)
     {
-        const string baseUrl = "http://localhost:5213/TicTacToe/AddPlayer";
-        using var client = new HttpClient();
         var player = new Player();
         var content = JsonContent.Create(player);
-        var response = await client.PostAsync(baseUrl, content);
+        var response = await _client.PostAsync("TicTacToe/AddPlayer", content);
         var responseContent = await response.Content.ReadAsStringAsync();
         var startGameInfo = JsonSerializer.Deserialize<StartGameInfo>(responseContent, _options);
         
@@ -48,9 +46,7 @@ public class Services
 
     public async Task<bool> IsGameStarted()
     {
-        const string baseUrl = "http://localhost:5213/TicTacToe/IsGameReady";
-        using var client = new HttpClient();
-        var response = await client.GetAsync(baseUrl);
+        var response = await _client.GetAsync("TicTacToe/IsGameReady");
         var responseContent = await response.Content.ReadAsStringAsync();
         var isGameStarted = JsonSerializer.Deserialize<bool>(responseContent, options: _options);
         return isGameStarted;
@@ -60,12 +56,10 @@ public class Services
     {
         try
         {
-            const string baseUrl = "http://localhost:5213/GameController/MakeTurn";
-            using var client = new HttpClient();
             var turnInfo = multiPlayerGame.TurnInfoCollector();
             var jsonContent = JsonSerializer.Serialize(turnInfo, options: _options);
             var content = new StringContent(jsonContent, Encoding.UTF8, "application/json");
-            var response = await client.PostAsync(baseUrl, content);
+            var response = await _client.PostAsync("GameController/MakeTurn", content);
             var responseContentString = await response.Content.ReadAsStringAsync();
             var gameStateFromServer = JsonSerializer.Deserialize<GameState>(responseContentString, options: _options);
             
@@ -88,13 +82,13 @@ public class Services
     {
         try
         {
-            const string baseUrl = "http://localhost:5213/GameController/WaitForTurn";
-            using var client = new HttpClient();
-            client.Timeout = TimeSpan.FromMilliseconds(Timeout.Infinite);
-            var response = await client.GetAsync(baseUrl);
+            using var cts = new CancellationTokenSource();
+            cts.CancelAfter(Timeout.Infinite);
+            //_client.Timeout = TimeSpan.FromMilliseconds(Timeout.Infinite);
+            var response = await _client.GetAsync("GameController/WaitForTurn",cts.Token);
             if (response.IsSuccessStatusCode)
             {
-                var responseContent = await response.Content.ReadAsStringAsync();
+                var responseContent = await response.Content.ReadAsStringAsync(cts.Token);
                 DeserializeGameStateFromJson(responseContent,multiPlayerGame);
             }
         }
