@@ -12,14 +12,14 @@ namespace TicTacToe;
 
 public class Services
 {
-
     private readonly HttpClient _client;
-    
+
     private readonly JsonSerializerOptions _options = new()
     {
-        Converters = {new JsonStringEnumConverter()},
+        Converters = { new JsonStringEnumConverter() },
         PropertyNameCaseInsensitive = true
     };
+
 
     public Services()
     {
@@ -34,7 +34,7 @@ public class Services
         var response = await _client.PostAsync("TicTacToe/AddPlayer", content);
         var responseContent = await response.Content.ReadAsStringAsync();
         var startGameInfo = JsonSerializer.Deserialize<StartGameInfo>(responseContent, _options);
-        
+
         if (startGameInfo != null)
         {
             Console.WriteLine($"Welcome your player sign is {startGameInfo.PlayerSign}");
@@ -56,13 +56,13 @@ public class Services
     {
         try
         {
-            var turnInfo = multiPlayerGame.TurnInfoCollector();
+            var turnInfo = multiPlayerGame.CollectTurnInfo();
             var jsonContent = JsonSerializer.Serialize(turnInfo, options: _options);
             var content = new StringContent(jsonContent, Encoding.UTF8, "application/json");
             var response = await _client.PostAsync("GameController/MakeTurn", content);
             var responseContentString = await response.Content.ReadAsStringAsync();
             var gameStateFromServer = JsonSerializer.Deserialize<GameState>(responseContentString, options: _options);
-            
+
             if (gameStateFromServer != null)
             {
                 //make separate method or constructor but how field painter in actual gameStateFromServer??!
@@ -77,7 +77,7 @@ public class Services
             Console.WriteLine("Request error: " + ex.Message);
         }
     }
-    
+
     public async Task WaitForTurn(MultiPlayerGame multiPlayerGame)
     {
         try
@@ -85,11 +85,11 @@ public class Services
             using var cts = new CancellationTokenSource();
             cts.CancelAfter(Timeout.Infinite);
             //_client.Timeout = TimeSpan.FromMilliseconds(Timeout.Infinite);
-            var response = await _client.GetAsync("GameController/WaitForTurn",cts.Token);
+            var response = await _client.GetAsync("GameController/WaitForTurn", cts.Token);
             if (response.IsSuccessStatusCode)
             {
                 var responseContent = await response.Content.ReadAsStringAsync(cts.Token);
-                DeserializeGameStateFromJson(responseContent,multiPlayerGame);
+                DeserializeGameStateFromJson(responseContent, multiPlayerGame);
             }
         }
         catch (HttpRequestException ex)
@@ -99,11 +99,11 @@ public class Services
     }
 
 
-    private void DeserializeGameStateFromJson(string responseContent, MultiPlayerGame multiPlayerGame )
+    private void DeserializeGameStateFromJson(string responseContent, MultiPlayerGame multiPlayerGame)
     {
         var gameState = JsonSerializer.Deserialize<GameState>(responseContent, options: _options);
         if (gameState == null) return;
-        
+
         multiPlayerGame.GameField = ConvertTo2DArray(gameState.GameField);
         multiPlayerGame.Winner = gameState.Winner;
         multiPlayerGame.IsGameEnd = gameState.IsGameEnd;
@@ -122,6 +122,7 @@ public class Services
                 gameField[i, j] = array[index++];
             }
         }
+
         return gameField;
     }
 }

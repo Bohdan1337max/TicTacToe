@@ -9,30 +9,44 @@ internal static class Program
     {
         InputHandler inputHandler = new InputHandler();
         FieldPainter fieldPainter = new();
-        await StartMultiPlayerGame(fieldPainter, inputHandler);
+        Console.WriteLine("Do you want play on your computer or on the server?");
+        Console.WriteLine("1: On the Server");
+        Console.WriteLine("2: On yor computer");
+
+
+        switch (HandleInput())
+        {
+            case 1:
+                await StartMultiPlayerGame(fieldPainter, inputHandler);
+                break;
+            case 2:
+                StartSinglePlayerGame(fieldPainter, inputHandler, args);
+                break;
+        }
+        
     }
 
-    private static async Task StartMultiPlayerGame( FieldPainter fieldPainter,InputHandler inputHandler)
+    private static async Task StartMultiPlayerGame(FieldPainter fieldPainter, InputHandler inputHandler)
     {
         var services = new Services();
-        MultiPlayerGame multiPlayerGame = new MultiPlayerGame(services , inputHandler);
-        
+        MultiPlayerGame multiPlayerGame = new MultiPlayerGame(services, inputHandler);
+
         await services.JoinToTheGame(multiPlayerGame);
-        
+
         while (!await services.IsGameStarted())
         {
             await Task.Delay(2000);
-            Console.WriteLine("Waiting for second player"); 
+            Console.WriteLine("Waiting for second player");
         }
-        
+
         while (!multiPlayerGame.IsGameEnd)
         {
             fieldPainter.PaintGameField(multiPlayerGame.GameField, inputHandler.X, inputHandler.Y);
-            
+
             await multiPlayerGame.CheckCurrentTurn();
-            
+
             fieldPainter.PaintGameField(multiPlayerGame.GameField, inputHandler.X, inputHandler.Y);
-            
+
             var key = Console.ReadKey(true);
             inputHandler.Handle(key);
 
@@ -40,19 +54,36 @@ internal static class Program
             {
                 await multiPlayerGame.MakeTurn(inputHandler.X, inputHandler.Y);
             }
+
             fieldPainter.PaintGameField(multiPlayerGame.GameField, inputHandler.X, inputHandler.Y);
         }
 
         multiPlayerGame.ShowEndGameNotification(multiPlayerGame.Winner);
-        
     }
 
-    private static void StartSinglePlayerGame()
+    private static void StartSinglePlayerGame(FieldPainter fieldPainter, InputHandler inputHandler, string[] args)
     {
-        
+        var game = new Game();
+        GetGameParams(args, game, fieldPainter);
+        game.ShowWelcomeNotification();
+        while (!game.IsGameEnd)
+        {
+            fieldPainter.PaintGameField(game.GameField, inputHandler.X, inputHandler.Y);
+            var key = Console.ReadKey(true);
+            inputHandler.Handle(key);
+
+            if (key.Key == ConsoleKey.Enter)
+            {
+                game.MakeTurn(inputHandler.X, inputHandler.Y);
+            }
+
+            fieldPainter.PaintGameField(game.GameField, inputHandler.X, inputHandler.Y);
+        }
+
+        game.ShowEndGameNotification(game.Winner);
     }
-    
-    private static void GetGameParams(string[] args, MultiPlayerGame multiPlayerGame, FieldPainter fieldPainter)
+
+    private static void GetGameParams(string[] args, Game game, FieldPainter fieldPainter)
     {
         string colorX;
         string colorO;
@@ -61,15 +92,14 @@ internal static class Program
 
         if (args[0] == "O")
         {
-            multiPlayerGame.CurrentSign = GameSigns.O;
+            game.currentSign = GameSigns.O;
         }
 
         if (args[0] == "X")
         {
-            multiPlayerGame.CurrentSign = GameSigns.X;
-           
+            game.currentSign = GameSigns.X;
         }
-        
+
         switch (args.Length)
         {
             case 2:
@@ -90,7 +120,7 @@ internal static class Program
             {
                 colorX = args[1];
                 colorO = args[2];
-            
+
                 if (CheckColor(colorX).IsParsed && CheckColor(colorO).IsParsed)
                 {
                     fieldPainter.ColorX = CheckColor(colorX).color;
@@ -106,20 +136,23 @@ internal static class Program
         }
     }
 
-    private static (bool IsParsed ,ConsoleColor color) CheckColor(string color)
+
+    private static (bool IsParsed, ConsoleColor color) CheckColor(string color)
     {
         return Enum.TryParse(color, out ConsoleColor parsedColor) ? (true, parsedColor) : (false, ConsoleColor.Black);
     }
+
 
     private static bool ValidateInput(string? turnInput)
     {
         if (int.TryParse(turnInput, out var correctInput))
         {
-            if (correctInput is >= 1 and <= 9)
+            if (correctInput is >= 1 and <= 2)
             {
                 return true;
             }
         }
+
         return false;
     }
 

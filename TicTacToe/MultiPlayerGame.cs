@@ -39,7 +39,7 @@ public class MultiPlayerGame
     }
     
     
-    public TurnInfo TurnInfoCollector()
+    public TurnInfo CollectTurnInfo()
     {
         return new TurnInfo()
         {
