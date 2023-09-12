@@ -3,12 +3,14 @@
 namespace ServerAP;
 public enum GameSigns
 {
-    Empty = 0,
-    O = 2,
-    X = 1,
+    Empty,
+    O,
+    X,
 }
 public class GameState
-{
+{ 
     public GameSigns[] GameField { get; set; } = null!;
-    public GameSigns TurnSign { get; set; }
+    public GameSigns Winner { get; set; }
+    public bool IsGameEnd { get; set; }
+    public bool CanPlayerMakeTurn { get; set; }
 }

@@ -1,86 +1,67 @@
-using System;
-using System.Linq;
-using System.Threading.Tasks;
-
-namespace TicTacToe;
+namespace ServerAP;
 
 public class Game
 {
     private readonly int[,] _field = new int[3, 3]
-    { // 0  1  2
+    {
+        // 0  1  2
         {7, 8, 9}, //0
         {4, 5, 6}, //1
-        {1, 2, 3}  //2
+        {1, 2, 3} //2
     };
-   
-    public GameSigns Winner; 
-    public readonly GameSigns[,] GameField = new GameSigns[3, 3];
-    public GameSigns currentSign = GameSigns.X;
-    public bool IsGameEnd;
-
-    public void MakeTurn(int numpadTurnInput)
+    
+    
+    public static readonly List<Player> Players = new();
+    public GameState GameState { get; set; } = null!;
+    private GameSigns Winner { get; set; }
+    private readonly GameSigns[,] _gameField = new GameSigns[3, 3];
+    public GameSigns CurrentSign = GameSigns.X;
+    private bool IsGameEnd { get; set; }
+    public bool CanPlayerMakeTurn { get; set; }
+    
+    
+    public void MakeTurn(int x,int y)
     {
-        for (int i = 0; i < 3; i++)
-        {
-            for (int j = 0; j < 3; j++)
-            {
-                if (_field[i, j] == numpadTurnInput)
-                {
-                    MakeTurn(i,j);
-                }
-            }
-        }
-    }
-
-    public void MakeTurn(int x, int y)
-    {
-
-        if (GameField[x, y] != GameSigns.Empty)
-            return;
-        GameField[x, y] = currentSign;
+        
+        _gameField[x, y] = CurrentSign;
         if (FindWinCombination(x, y))
         {
-            Winner = currentSign;
+            Winner = CurrentSign;
             IsGameEnd = true;
             return;
         }
+        CheckIsFieldFull();
+    }
+
+    public void ChangeGameSign(GameSigns playerSign)
+    {
+        CurrentSign = playerSign == GameSigns.X ? GameSigns.O : GameSigns.X;
+    }
+
+    public (bool isTurnValid,string errorMessage) ValidateTurn(int x,int y, GameSigns playerTurnSign)
+    {
+        var errorMessage = "";
+        var isTurnValid = true;
         
-        ChangeGameSign();
-        CheckIsFieldComplete();
-    }
-
-    private void ChangeGameSign()
-    {
-        currentSign = currentSign switch
+        if (playerTurnSign != CurrentSign)
         {
-            GameSigns.X => GameSigns.O,
-            GameSigns.O => GameSigns.X,
-            _ => currentSign
-        };
-    }
-
-
-    private bool FindWinCombination(int numpadTurnInput)
-    {
-        for (int i = 0; i < 3; i++)
-        {
-            for (int j = 0; j < 3; j++)
-            {
-                if (numpadTurnInput == _field[i, j])
-                {
-                    if (FindVerticalWinCombination(i, j) >= 2)
-                        return true;
-                    if (FindHorizontalWinCombination(i, j) >= 2)
-                        return true;
-                    if (FindDiagonalWinCombination(i, j) >= 2)
-                        return true;
-                }
-            }
+            errorMessage = "Now it's the other player's turn";
+            isTurnValid = false;
+            return (isTurnValid,errorMessage);
         }
 
-        return false;
-    }
+        if (_gameField[x, y] != GameSigns.Empty)
+        {
+            errorMessage = "Cell is full";
+            isTurnValid = false;
+        }
 
+        return (isTurnValid, errorMessage);
+    }
+    
+    
+    
+    
     private bool FindWinCombination(int x, int y)
     {
         if (FindVerticalWinCombination(x, y) >= 2)
@@ -89,19 +70,32 @@ public class Game
             return true;
         return FindDiagonalWinCombination(x, y) >= 2;
     }
+    
 
+    public GameState GameStateCollect()
+    {
+        return new GameState
+        {
+            GameField = _gameField.Cast<GameSigns>().ToArray(),
+            Winner = Winner,
+            IsGameEnd = IsGameEnd,
+            CanPlayerMakeTurn = CanPlayerMakeTurn
+            
+        };
+    }
     private int FindVerticalWinCombination(int x, int y)
     {
-        var sign = GameField[x, y];
+        var sign = _gameField[x, y];
         int winCombination = 0;
 
+        //Optimize method
         switch (y)
         {
             case 0:
             {
                 while (y < 2)
                 {
-                    if (sign == GameField[x, y + 1])
+                    if (sign == _gameField[x, y + 1])
                     {
                         winCombination++;
                         y++;
@@ -116,12 +110,12 @@ public class Game
             }
             case 1:
             {
-                if (sign == GameField[x, y + 1])
+                if (sign == _gameField[x, y + 1])
                 {
                     winCombination++;
                 }
 
-                if (sign == GameField[x, y - 1])
+                if (sign == _gameField[x, y - 1])
                 {
                     winCombination++;
                 }
@@ -132,7 +126,7 @@ public class Game
             {
                 while (y > 0)
                 {
-                    if (sign == GameField[x, y - 1])
+                    if (sign == _gameField[x, y - 1])
                     {
                         winCombination++;
                         y--;
@@ -152,7 +146,7 @@ public class Game
 
     private int FindHorizontalWinCombination(int x, int y)
     {
-        var sign = GameField[x,y];
+        var sign = _gameField[x, y];
         int winCombination = 0;
 
         switch (x)
@@ -161,7 +155,7 @@ public class Game
             {
                 while (x < 2)
                 {
-                    if (sign == GameField[ x + 1,y])
+                    if (sign == _gameField[x + 1, y])
                     {
                         winCombination++;
                         x++;
@@ -176,12 +170,12 @@ public class Game
             }
             case 1:
             {
-                if (sign == GameField[ x + 1,y])
+                if (sign == _gameField[x + 1, y])
                 {
                     winCombination++;
                 }
 
-                if (sign == GameField[ x + 1, y])
+                if (sign == _gameField[x + 1, y])
                 {
                     winCombination++;
                 }
@@ -192,7 +186,7 @@ public class Game
             {
                 while (x > 0)
                 {
-                    if (sign == GameField[ x - 1,y])
+                    if (sign == _gameField[x - 1, y])
                     {
                         winCombination++;
                         x--;
@@ -212,42 +206,34 @@ public class Game
 
     private int FindDiagonalWinCombination(int x, int y)
     {
-        var sign = GameField[x, y];
+        var sign = _gameField[x, y];
 
-        if (sign == GameField[2, 0] && sign == GameField[0, 2] && sign == GameField[1, 1])
+        if (sign == _gameField[2, 0] && sign == _gameField[0, 2] && sign == _gameField[1, 1])
             return 2;
-        if (sign == GameField[0, 0] && sign == GameField[2, 2] && sign == GameField[1, 1])
+        if (sign == _gameField[0, 0] && sign == _gameField[2, 2] && sign == _gameField[1, 1])
             return 2;
-
         return 0;
     }
 
-    public void ShowEndGameNotification(GameSigns winner)
-    {
-        Console.WriteLine(
-            winner == GameSigns.Empty ? "DRAW!! Game field is full" : $"Congratulations {winner} WIN!!!!!");
-    }
-
-    private void CheckIsFieldComplete()
+    private void CheckIsFieldFull()
     {
         var emptySpaceCounter = 0;
+
         for (int i = 0; i < 3; i++)
         {
             for (int j = 0; j < 3; j++)
             {
-                if (GameField[i, j] == GameSigns.Empty)
+                if (_gameField[i, j] == GameSigns.Empty)
                     emptySpaceCounter++;
             }
         }
+
         if (emptySpaceCounter != 0)
         {
             return;
         }
+
         IsGameEnd = true;
         Winner = GameSigns.Empty;
-    }
-    public void ShowWelcomeNotification()
-    {
-        Console.WriteLine("Welcome! Red# is your pointer.You can use arrows for navigate on the field!");
     }
 }
